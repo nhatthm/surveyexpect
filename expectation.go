@@ -2,11 +2,11 @@ package surveymock
 
 // Expectation is an expectation for mocking survey.
 type Expectation interface {
-	// expect runs the expectation.
-	expect(c Console) error
+	// Expect runs the expectation.
+	Expect(c Console) error
 
-	// repeat tells survey to repeat the same expectation.
-	repeat() bool
+	// Repeat tells survey to repeat the same expectation.
+	Repeat() bool
 
 	// String represents the expectation as a string.
 	String() string
@@ -30,17 +30,17 @@ func (b *base) unlock() {
 }
 
 func (b *base) times(i int) {
-	b.repeatability = i
-}
-
-func (b *base) timesLocked(i int) {
 	b.lock()
 	defer b.unlock()
 
-	b.times(i)
+	b.timesLocked(i)
 }
 
-func (b *base) repeat() bool {
+func (b *base) timesLocked(i int) {
+	b.repeatability = i
+}
+
+func (b *base) Repeat() bool {
 	b.lock()
 	defer b.unlock()
 

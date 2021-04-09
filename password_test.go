@@ -1,6 +1,7 @@
 package surveymock_test
 
 import (
+	"io"
 	"testing"
 	"time"
 
@@ -82,7 +83,8 @@ func TestPassword(t *testing.T) {
 			scenario: "input is invalid",
 			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
 				s.ExpectPassword("Enter a password:").
-					Answer("\033X")
+					Answer("\033X").
+					ExpectError(io.EOF)
 			}),
 			message:       "Enter a password:",
 			expectedError: `Unexpected Escape Sequence: ['\x1b' 'X']`,
@@ -156,7 +158,7 @@ func TestPassword_NoHelpButStillExpect(t *testing.T) {
 					Answer("secret")
 			}),
 			showHelp:      true,
-			expectedError: "there are remaining expectations that were not met:\n\nType   : Password\nMessage: Enter a password: [? for help] \nHelp   : It is your secret\nAnswer : secret\n",
+			expectedError: "there are remaining expectations that were not met:\n\nType   : Password\nMessage: \"Enter a password: [? for help] \"\nHelp   : \"Enter a password: [? for help] \"\nAnswer : \"secret\"\n",
 		},
 		{
 			scenario: "with hidden help",
@@ -168,7 +170,7 @@ func TestPassword_NoHelpButStillExpect(t *testing.T) {
 			}),
 			showHelp:       false,
 			expectedAnswer: "?",
-			expectedError:  "there are remaining expectations that were not met:\n\nType   : Password\nMessage: Enter a password: \nHelp   : It is your secret\nAnswer : secret\n",
+			expectedError:  "there are remaining expectations that were not met:\n\nType   : Password\nMessage: \"Enter a password: \"\nHelp   : \"Enter a password: \"\nAnswer : \"secret\"\n",
 		},
 	}
 
@@ -195,4 +197,33 @@ func TestPassword_NoHelpButStillExpect(t *testing.T) {
 			t.Log(testingT.LogString())
 		})
 	}
+}
+
+func TestPassword_SuccessAnswerButExpectError(t *testing.T) {
+	t.Parallel()
+
+	testingT := T()
+	s := surveymock.Mock(func(s *surveymock.Survey) {
+		s.ExpectPassword("Enter a password:").
+			Answer("secret").
+			ExpectError(io.EOF)
+	})(testingT)
+
+	p := &survey.Password{Message: "Enter a password:"}
+
+	expectedAnswer := "secret"
+	expectedError := "there are remaining expectations that were not met:\n\nType   : Password\nMessage: \"Enter a password: \"\nAnswer : \"secret\" and expects error \"EOF\"\n"
+
+	// Start the survey.
+	s.Start(func(stdio terminal.Stdio) {
+		var answer string
+		err := survey.AskOne(p, &answer, surveymock.WithStdio(stdio))
+
+		assert.Equal(t, expectedAnswer, answer)
+		assert.NoError(t, err)
+
+		assert.EqualError(t, s.ExpectationsWereMet(), expectedError)
+
+		t.Log(testingT.LogString())
+	})
 }

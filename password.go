@@ -1,13 +1,17 @@
 package surveymock
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/AlecAivazis/survey/v2/terminal"
 )
 
-var _ Expectation = (*Password)(nil)
+var (
+	_ Expectation = (*Password)(nil)
+	_ Answer      = (*PasswordAnswer)(nil)
+)
 
 // Password is an expectation of survey.Password.
 type Password struct {
@@ -16,7 +20,7 @@ type Password struct {
 	message         string
 	expectedMessage string
 	help            string
-	answer          string
+	answer          Answer
 }
 
 // WithHiddenHelp sets help for the expectation.
@@ -57,32 +61,31 @@ func (p *Password) WithHelp(help string) *Password {
 //
 //    Survey.ExpectPassword("Enter password:").
 //    	Interrupt().
-func (p *Password) Interrupt() *Password {
+func (p *Password) Interrupt() {
 	p.lock()
 	defer p.unlock()
 
-	p.answer = string(terminal.KeyInterrupt)
-	p.times(1)
-
-	return p
+	p.answer = newInterrupt()
+	p.timesLocked(1)
 }
 
 // Answer sets the answer to the password prompt.
 //
 //    Survey.ExpectPassword("Enter password:").
 //    	Answer("hello world!").
-func (p *Password) Answer(answer string) *Password {
+func (p *Password) Answer(answer string) *PasswordAnswer {
 	p.lock()
 	defer p.unlock()
 
-	p.answer = answer
+	a := newPasswordAnswer(p, answer)
+	p.answer = a
 
-	return p
+	return a
 }
 
-// expect runs the expectation.
+// Expect runs the expectation.
 // nolint: errcheck,gosec
-func (p *Password) expect(c Console) error {
+func (p *Password) Expect(c Console) error {
 	_, err := c.ExpectString(p.expectedMessage)
 	if err != nil {
 		return err
@@ -97,16 +100,15 @@ func (p *Password) expect(c Console) error {
 		}
 	}
 
-	if p.answer != "" {
-		c.Send(p.answer)
+	err = p.answer.Expect(c)
+	if err != nil && !errors.Is(err, terminal.InterruptErr) {
+		return err
 	}
-
-	c.SendLine("")
 
 	p.repeatability--
 	p.totalCalls++
 
-	return nil
+	return err
 }
 
 // String represents the expectation as a string.
@@ -114,21 +116,13 @@ func (p *Password) String() string {
 	var sb strings.Builder
 
 	_, _ = sb.WriteString("Type   : Password\n")
-	_, _ = sb.WriteString("Message: ")
-	_, _ = sb.WriteString(p.expectedMessage)
-	_, _ = sb.WriteRune('\n')
+	_, _ = fmt.Fprintf(&sb, "Message: %q\n", p.expectedMessage)
 
 	if p.help != "" {
-		_, _ = sb.WriteString("Help   : ")
-		_, _ = sb.WriteString(p.help)
-		_, _ = sb.WriteRune('\n')
+		_, _ = fmt.Fprintf(&sb, "Help   : %q\n", p.expectedMessage)
 	}
 
-	if p.answer != "" {
-		_, _ = sb.WriteString("Answer : ")
-		_, _ = sb.WriteString(p.answer)
-		_, _ = sb.WriteRune('\n')
-	}
+	_, _ = fmt.Fprintf(&sb, "Answer : %s\n", p.answer.String())
 
 	if p.repeatability > 0 && (p.totalCalls != 0 || p.repeatability != 1) {
 		_, _ = fmt.Fprintf(&sb, "(called: %d time(s), remaining: %d time(s))", p.totalCalls, p.repeatability)
@@ -136,16 +130,6 @@ func (p *Password) String() string {
 	}
 
 	return sb.String()
-}
-
-func newPassword(parent *Survey, message string) *Password {
-	message += " "
-
-	return &Password{
-		base:            &base{parent: parent},
-		message:         message,
-		expectedMessage: message,
-	}
 }
 
 // Once indicates that the message should only be asked once.
@@ -172,7 +156,78 @@ func (p *Password) Twice() *Password {
 //    	Answer("hello world!").
 //    	Times(5)
 func (p *Password) Times(i int) *Password {
-	p.timesLocked(i)
+	p.times(i)
 
 	return p
+}
+
+// PasswordAnswer is answer for password question.
+type PasswordAnswer struct {
+	parent *Password
+	answer string
+	err    error
+}
+
+// Expect runs the expectation.
+// nolint: errcheck,gosec
+func (a *PasswordAnswer) Expect(c Console) error {
+	c.Send(a.answer)
+
+	// Expect asterisks.
+	_, err := c.ExpectString(strings.Repeat("*", len(a.answer)))
+	if err != nil {
+		if !errors.Is(err, a.err) {
+			return err
+		}
+
+		a.err = nil
+	}
+
+	c.SendLine("")
+
+	if a.err != nil {
+		// nolint: goerr113
+		return errors.New("no error received")
+	}
+
+	return nil
+}
+
+// ExpectError expects an error after answering to the question.
+func (a *PasswordAnswer) ExpectError(err error) {
+	a.parent.lock()
+	defer a.parent.unlock()
+
+	a.err = err
+}
+
+// String represents the answer as a string.
+func (a *PasswordAnswer) String() string {
+	var sb strings.Builder
+
+	_, _ = fmt.Fprintf(&sb, "%q", a.answer)
+
+	if a.err != nil {
+		_, _ = fmt.Fprintf(&sb, " and expects error %q", a.err.Error())
+	}
+
+	return sb.String()
+}
+
+func newPassword(parent *Survey, message string) *Password {
+	message += " "
+
+	return &Password{
+		base:            &base{parent: parent},
+		message:         message,
+		expectedMessage: message,
+		answer:          noAnswer(),
+	}
+}
+
+func newPasswordAnswer(parent *Password, answer string) *PasswordAnswer {
+	return &PasswordAnswer{
+		parent: parent,
+		answer: answer,
+	}
 }

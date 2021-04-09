@@ -72,11 +72,11 @@ func (s *Survey) runExpectation(c Console) error {
 	e := s.expectations[0]
 	s.mu.Unlock()
 
-	if err := e.expect(c); err != nil {
+	if err := e.Expect(c); err != nil && !errors.Is(err, terminal.InterruptErr) {
 		return err
 	}
 
-	if e.repeat() {
+	if e.Repeat() {
 		return nil
 	}
 
