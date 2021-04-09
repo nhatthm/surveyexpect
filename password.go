@@ -42,7 +42,7 @@ func (p *Password) WithHiddenHelp(help string) *Password {
 //    Survey.ExpectPassword("Enter password:").
 //    	WithHelp("Your shiny password").
 //    	Answer("hello world!").
-func (p *Password) WithHelp(help string) *Password {
+func (p *Password) WithHelp(help string) *Password { // nolint: unparam
 	p.lock()
 	defer p.unlock()
 
@@ -65,7 +65,7 @@ func (p *Password) Interrupt() {
 	p.lock()
 	defer p.unlock()
 
-	p.answer = newInterrupt()
+	p.answer = interruptAnswer()
 	p.timesLocked(1)
 }
 

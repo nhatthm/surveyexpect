@@ -48,6 +48,6 @@ func (a *InterruptAnswer) String() string {
 	return "<interrupt>"
 }
 
-func newInterrupt() *InterruptAnswer {
+func interruptAnswer() *InterruptAnswer {
 	return &InterruptAnswer{}
 }
