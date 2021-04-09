@@ -6,7 +6,7 @@
 [![GoDevDoc](https://img.shields.io/badge/dev-doc-00ADD8?logo=go)](https://pkg.go.dev/github.com/nhatthm/surveymock)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?hosted_button_id=PJZSGJN57TDJY)
 
-**surveymock** is a mock library for [AlecAivazis/survey/v2](https://github.com/AlecAivazis/survey/v2)
+**surveymock** is a mock library for [AlecAivazis/survey/v2](https://github.com/AlecAivazis/survey)
 
 ## Prerequisites
 
