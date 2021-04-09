@@ -1,7 +1,6 @@
 package surveymock_test
 
 import (
-	"io"
 	"testing"
 	"time"
 
@@ -84,7 +83,7 @@ func TestPassword(t *testing.T) {
 			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
 				s.ExpectPassword("Enter a password:").
 					Answer("\033X").
-					MayGet(io.EOF)
+					Interrupted()
 			}),
 			message:       "Enter a password:",
 			expectedError: `Unexpected Escape Sequence: ['\x1b' 'X']`,
@@ -193,6 +192,80 @@ func TestPassword_NoHelpButStillExpect(t *testing.T) {
 			})
 
 			assert.EqualError(t, s.ExpectationsWereMet(), tc.expectedError)
+
+			t.Log(testingT.LogString())
+		})
+	}
+}
+
+func TestPassword_SurveyInterrupted(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		scenario      string
+		mockSurvey    surveymock.Mocker
+		expectedError string
+	}{
+		{
+			scenario: "interrupt",
+			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+				s.ExpectPassword("Enter your username:").Interrupt()
+			}),
+			expectedError: "interrupt",
+		},
+		{
+			scenario: "invalid input",
+			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+				s.ExpectPassword("Enter your username:").
+					Answer("\033X").
+					Interrupted()
+			}),
+			expectedError: `Unexpected Escape Sequence: ['\x1b' 'X']`,
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.scenario, func(t *testing.T) {
+			t.Parallel()
+
+			testingT := T()
+			s := tc.mockSurvey(testingT)
+
+			questions := []*survey.Question{
+				{
+					Name:   "username",
+					Prompt: &survey.Password{Message: "Enter your username:"},
+				},
+				{
+					Name:   "password",
+					Prompt: &survey.Password{Message: "Enter your password:"},
+				},
+			}
+
+			expectedResult := map[string]string{
+				"username": "old username",
+				"password": "old password",
+			}
+
+			// Start the survey.
+			s.Start(func(stdio terminal.Stdio) {
+				result := map[string]string{
+					"username": "old username",
+					"password": "old password",
+				}
+				err := survey.Ask(questions, &result, surveymock.WithStdio(stdio))
+
+				assert.Equal(t, expectedResult, result)
+
+				if tc.expectedError == "" {
+					assert.NoError(t, err)
+				} else {
+					assert.EqualError(t, err, tc.expectedError)
+				}
+			})
+
+			assert.Nil(t, s.ExpectationsWereMet())
 
 			t.Log(testingT.LogString())
 		})

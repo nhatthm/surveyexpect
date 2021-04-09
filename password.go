@@ -163,9 +163,9 @@ func (p *Password) Times(i int) *Password {
 
 // PasswordAnswer is answer for password question.
 type PasswordAnswer struct {
-	parent *Password
-	answer string
-	err    error
+	parent      *Password
+	answer      string
+	interrupted bool
 }
 
 // Expect runs the expectation.
@@ -173,14 +173,16 @@ type PasswordAnswer struct {
 func (a *PasswordAnswer) Expect(c Console) error {
 	c.Send(a.answer)
 
+	if a.interrupted {
+		c.ExpectEOF()
+
+		return nil
+	}
+
 	// Expect asterisks.
 	_, err := c.ExpectString(strings.Repeat("*", len(a.answer)))
 	if err != nil {
-		if !errors.Is(err, a.err) {
-			return err
-		}
-
-		a.err = nil
+		return err
 	}
 
 	c.SendLine("")
@@ -188,12 +190,12 @@ func (a *PasswordAnswer) Expect(c Console) error {
 	return nil
 }
 
-// MayGet may expect an error after answering to the question.
-func (a *PasswordAnswer) MayGet(err error) {
+// Interrupted expects the answer will be interrupted.
+func (a *PasswordAnswer) Interrupted() {
 	a.parent.lock()
 	defer a.parent.unlock()
 
-	a.err = err
+	a.interrupted = true
 }
 
 // String represents the answer as a string.
@@ -202,8 +204,8 @@ func (a *PasswordAnswer) String() string {
 
 	_, _ = fmt.Fprintf(&sb, "%q", a.answer)
 
-	if a.err != nil {
-		_, _ = fmt.Fprintf(&sb, " and expects error %q", a.err.Error())
+	if a.interrupted {
+		_, _ = sb.WriteString(" and get interrupted")
 	}
 
 	return sb.String()
