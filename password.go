@@ -185,16 +185,11 @@ func (a *PasswordAnswer) Expect(c Console) error {
 
 	c.SendLine("")
 
-	if a.err != nil {
-		// nolint: goerr113
-		return errors.New("no error received")
-	}
-
 	return nil
 }
 
-// ExpectError expects an error after answering to the question.
-func (a *PasswordAnswer) ExpectError(err error) {
+// MayGet may expect an error after answering to the question.
+func (a *PasswordAnswer) MayGet(err error) {
 	a.parent.lock()
 	defer a.parent.unlock()
 
