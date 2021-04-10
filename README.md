@@ -22,7 +22,7 @@ go get github.com/nhatthm/surveymock
 
 ### Supported Types
 
-For now, it only supports `Confirm` and `Password`
+For now, it only supports [`Confirm`](https://github.com/AlecAivazis/survey#confirm) and [`Password`](https://github.com/AlecAivazis/survey#password)
 
 
 ### Mock
