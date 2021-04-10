@@ -133,6 +133,8 @@ func TestMyPackage(t *testing.T) {
 }
 ```
 
+You can find more examples in the tests of this library. For example: https://github.com/nhatthm/surveymock/blob/master/confirm_test.go or https://github.com/nhatthm/surveymock/blob/master/confirm_test.go
+
 ## Donation
 
 If this project help you reduce time to develop, you can give me a cup of coffee :)
