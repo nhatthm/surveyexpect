@@ -54,6 +54,18 @@ func (s *Survey) expect(e Expectation) {
 	s.expectations = append(s.expectations, e)
 }
 
+// ExpectConfirm expects a Confirm.
+//
+//    Survey.ExpectConfirm("Confirm?").
+//    	Yes()
+func (s *Survey) ExpectConfirm(question string) *Confirm {
+	e := newConfirm(s, question)
+
+	s.expect(e)
+
+	return e
+}
+
 // ExpectPassword expects a Password.
 //
 //    Survey.ExpectPassword("Enter password:").

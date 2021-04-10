@@ -122,7 +122,7 @@ func (p *Password) Times(i int) *Password {
 	return p
 }
 
-// PasswordAnswer is answer for password question.
+// PasswordAnswer is an answer for password question.
 type PasswordAnswer struct {
 	parent      *Password
 	answer      string
