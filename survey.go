@@ -154,7 +154,6 @@ func (s *Survey) answer(c Console, rawOutput StringWriter) <-chan struct{} {
 			close(done)
 
 		case <-done:
-			s.test.Log("answer is done")
 		}
 	}()
 
