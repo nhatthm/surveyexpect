@@ -241,14 +241,14 @@ func TestPassword_SurveyInterrupted(t *testing.T) {
 				},
 			}
 
-			expectedResult := map[string]string{
+			expectedResult := map[string]interface{}{
 				"username": "old username",
 				"password": "old password",
 			}
 
 			// Start the survey.
 			s.Start(func(stdio terminal.Stdio) {
-				result := map[string]string{
+				result := map[string]interface{}{
 					"username": "old username",
 					"password": "old password",
 				}
