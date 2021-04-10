@@ -151,17 +151,33 @@ func (s *Survey) answer(c Console, rawOutput StringWriter) <-chan struct{} {
 
 // ask runs the survey.
 func (s *Survey) ask(c Console, fn func(stdio terminal.Stdio)) {
-	defer func() {
-		s.test.Log("close console")
+	done := make(chan struct{})
 
-		err := c.Tty().Close()
-		require.NoError(s.test, err)
+	go func() {
+		defer func() {
+			s.test.Log("close console")
 
-		err = c.Close()
-		require.NoError(s.test, err)
+			err := c.Tty().Close()
+			require.NoError(s.test, err)
+
+			err = c.Close()
+			require.NoError(s.test, err)
+
+			close(done)
+		}()
+
+		fn(stdio(c))
 	}()
 
-	fn(stdio(c))
+	go func() {
+		select {
+		case <-time.After(s.timeout):
+			s.test.Errorf("ask timeout exceeded")
+
+		case <-done:
+			return
+		}
+	}()
 }
 
 // Start starts the survey with a default timeout.
@@ -174,13 +190,12 @@ func (s *Survey) Start(fn func(stdio terminal.Stdio)) {
 	console, state, err := vt10x.NewVT10XConsole(expect.WithStdout(buf))
 	require.Nil(s.test, err)
 
-	// Run the answer in background.
-	done := s.answer(console, buf)
 	// Run the survey in background and close console when it is done.
-	go s.ask(console, fn)
+	s.ask(console, fn)
 
+	// Run the answer in background.
 	// Wait til the survey is done answering.
-	<-done
+	<-s.answer(console, buf)
 
 	// Dump the terminal's screen.
 	s.test.Logf("%s\n", expect.StripTrailingEmptyLines(state.String()))
