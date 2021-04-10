@@ -19,6 +19,7 @@ func TestPassword(t *testing.T) {
 		mockSurvey     surveymock.Mocker
 		message        string
 		help           string
+		showHelp       bool
 		options        []survey.AskOpt
 		expectedAnswer string
 		expectedError  string
@@ -48,7 +49,32 @@ func TestPassword(t *testing.T) {
 			expectedAnswer: "secret",
 		},
 		{
-			scenario: "password with help and do not ask for it",
+			scenario: "password with visible help and do not ask for it",
+			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+				s.ExpectPassword("Enter a password: [? for help]").
+					Answer("secret")
+			}),
+			message:        "Enter a password:",
+			help:           "It is your secret",
+			showHelp:       true,
+			expectedAnswer: "secret",
+		},
+		{
+			scenario: "password with visible help and ask for it",
+			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+				s.ExpectPassword("Enter a password: [? for help]").
+					ShowHelp("It is your secret")
+
+				s.ExpectPassword("Enter a password:").
+					Answer("secret")
+			}),
+			message:        "Enter a password:",
+			help:           "It is your secret",
+			showHelp:       true,
+			expectedAnswer: "secret",
+		},
+		{
+			scenario: "password with invisible help and do not ask for it",
 			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
 				s.ExpectPassword("Enter a password:").
 					Answer("secret")
@@ -58,10 +84,12 @@ func TestPassword(t *testing.T) {
 			expectedAnswer: "secret",
 		},
 		{
-			scenario: "password with help and ask for it",
+			scenario: "password with invisible help and ask for it",
 			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
 				s.ExpectPassword("Enter a password:").
-					WithHelp("It is your secret").
+					ShowHelp("It is your secret")
+
+				s.ExpectPassword("Enter a password:").
 					Answer("secret")
 			}),
 			message:        "Enter a password:",
@@ -114,9 +142,9 @@ func TestPassword(t *testing.T) {
 
 			// Prepare the survey.
 			s := tc.mockSurvey(t)
-			p := &survey.Password{
-				Message: tc.message,
-				Help:    tc.help,
+			p := &survey.PasswordTemplateData{
+				Password: survey.Password{Message: tc.message, Help: tc.help},
+				ShowHelp: tc.showHelp,
 			}
 
 			// Start the survey.
@@ -141,61 +169,31 @@ func TestPassword(t *testing.T) {
 func TestPassword_NoHelpButStillExpect(t *testing.T) {
 	t.Parallel()
 
-	testCases := []struct {
-		scenario       string
-		mockSurvey     surveymock.Mocker
-		showHelp       bool
-		expectedAnswer string
-		expectedError  string
-	}{
-		{
-			scenario: "with visible help",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
-				s.WithTimeout(10 * time.Millisecond)
-				s.ExpectPassword("Enter a password:").
-					WithHelp("It is your secret").
-					Answer("secret")
-			}),
-			showHelp:      true,
-			expectedError: "there are remaining expectations that were not met:\n\nType   : Password\nMessage: \"Enter a password: [? for help] \"\nHelp   : \"Enter a password: [? for help] \"\nAnswer : \"secret\"\n",
-		},
-		{
-			scenario: "with hidden help",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
-				s.WithTimeout(10 * time.Millisecond)
-				s.ExpectPassword("Enter a password:").
-					WithHiddenHelp("It is your secret").
-					Answer("secret")
-			}),
-			showHelp:       false,
-			expectedAnswer: "?",
-			expectedError:  "there are remaining expectations that were not met:\n\nType   : Password\nMessage: \"Enter a password: \"\nHelp   : \"Enter a password: \"\nAnswer : \"secret\"\n",
-		},
-	}
+	testingT := T()
+	s := surveymock.Mock(func(s *surveymock.Survey) {
+		s.WithTimeout(10 * time.Millisecond)
 
-	for _, tc := range testCases {
-		tc := tc
-		t.Run(tc.scenario, func(t *testing.T) {
-			t.Parallel()
+		s.ExpectPassword("Enter a password:").
+			ShowHelp("It is your secret")
+	})(testingT)
 
-			testingT := T()
-			p := &survey.PasswordTemplateData{Password: survey.Password{Message: "Enter a password:"}, ShowHelp: tc.showHelp}
-			s := tc.mockSurvey(testingT)
+	expectedAnswer := "?"
+	expectedError := "there are remaining expectations that were not met:\n\nType   : Password\nMessage: \"Enter a password:\"\nAnswer : ?\n"
 
-			// Start the survey.
-			s.Start(func(stdio terminal.Stdio) {
-				var answer string
-				err := survey.AskOne(p, &answer, surveymock.WithStdio(stdio))
+	p := &survey.Password{Message: "Enter a password:"}
 
-				assert.Equal(t, tc.expectedAnswer, answer)
-				assert.NoError(t, err)
-			})
+	// Start the survey.
+	s.Start(func(stdio terminal.Stdio) {
+		var answer string
+		err := survey.AskOne(p, &answer, surveymock.WithStdio(stdio))
 
-			assert.EqualError(t, s.ExpectationsWereMet(), tc.expectedError)
+		assert.Equal(t, expectedAnswer, answer)
+		assert.NoError(t, err)
+	})
 
-			t.Log(testingT.LogString())
-		})
-	}
+	assert.EqualError(t, s.ExpectationsWereMet(), expectedError)
+
+	t.Log(testingT.LogString())
 }
 
 func TestPassword_SurveyInterrupted(t *testing.T) {

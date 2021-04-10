@@ -51,3 +51,30 @@ func (a *InterruptAnswer) String() string {
 func interruptAnswer() *InterruptAnswer {
 	return &InterruptAnswer{}
 }
+
+// HelpAnswer sends a ? to show the help.
+type HelpAnswer struct {
+	help string
+}
+
+// Expect runs the expectation.
+// nolint: errcheck,gosec
+func (a *HelpAnswer) Expect(c Console) error {
+	c.Send("?")
+	c.SendLine("")
+
+	if _, err := c.ExpectString(a.help); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// String represents the answer as a string.
+func (a *HelpAnswer) String() string {
+	return "?"
+}
+
+func helpAnswer(help string) *HelpAnswer {
+	return &HelpAnswer{help: help}
+}

@@ -29,33 +29,3 @@ func TestPassword_Times(t *testing.T) {
 
 	assert.Equal(t, 5, p.repeatability)
 }
-
-func TestPassword_WithHiddenHelp(t *testing.T) {
-	t.Parallel()
-
-	p := newPassword(&Survey{}, "original message").WithHiddenHelp("help")
-
-	assert.Equal(t, "original message ", p.message)
-	assert.Equal(t, "original message ", p.expectedMessage)
-	assert.Equal(t, "help", p.help)
-}
-
-func TestPassword_WithHelp(t *testing.T) {
-	t.Parallel()
-
-	p := newPassword(&Survey{}, "original message")
-
-	// With Help.
-	p.WithHelp("help")
-
-	assert.Equal(t, "original message ", p.message)
-	assert.Equal(t, "original message [? for help] ", p.expectedMessage)
-	assert.Equal(t, "help", p.help)
-
-	// Clear Help.
-	p.WithHelp("")
-
-	assert.Equal(t, "original message ", p.message)
-	assert.Equal(t, "original message ", p.expectedMessage)
-	assert.Empty(t, p.help)
-}

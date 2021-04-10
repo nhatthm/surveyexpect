@@ -17,44 +17,20 @@ var (
 type Password struct {
 	*base
 
-	message         string
-	expectedMessage string
-	help            string
-	answer          Answer
+	message string
+	answer  Answer
 }
 
-// WithHiddenHelp sets help for the expectation.
+// ShowHelp sets help for the expectation.
 //
 //    Survey.ExpectPassword("Enter password:").
-//    	WithHiddenHelp("Your shiny password").
-//    	Answer("hello world!").
-func (p *Password) WithHiddenHelp(help string) *Password {
+//    	ShowHelp("Your shiny password").
+func (p *Password) ShowHelp(help string) {
 	p.lock()
 	defer p.unlock()
 
-	p.help = help
-
-	return p
-}
-
-// WithHelp sets help for the expectation.
-//
-//    Survey.ExpectPassword("Enter password:").
-//    	WithHelp("Your shiny password").
-//    	Answer("hello world!").
-func (p *Password) WithHelp(help string) *Password { // nolint: unparam
-	p.lock()
-	defer p.unlock()
-
-	p.help = help
-
-	if help == "" {
-		p.expectedMessage = p.message
-	} else {
-		p.expectedMessage = fmt.Sprintf("%s[? for help] ", p.message)
-	}
-
-	return p
+	p.answer = helpAnswer(help)
+	p.timesLocked(1)
 }
 
 // Interrupt marks the answer is interrupted.
@@ -84,20 +60,10 @@ func (p *Password) Answer(answer string) *PasswordAnswer {
 }
 
 // Expect runs the expectation.
-// nolint: errcheck,gosec
 func (p *Password) Expect(c Console) error {
-	_, err := c.ExpectString(p.expectedMessage)
+	_, err := c.ExpectString(p.message)
 	if err != nil {
 		return err
-	}
-
-	if p.help != "" {
-		c.SendLine("?")
-
-		_, err := c.ExpectString(p.help)
-		if err != nil {
-			return err
-		}
 	}
 
 	err = p.answer.Expect(c)
@@ -116,12 +82,7 @@ func (p *Password) String() string {
 	var sb strings.Builder
 
 	_, _ = sb.WriteString("Type   : Password\n")
-	_, _ = fmt.Fprintf(&sb, "Message: %q\n", p.expectedMessage)
-
-	if p.help != "" {
-		_, _ = fmt.Fprintf(&sb, "Help   : %q\n", p.expectedMessage)
-	}
-
+	_, _ = fmt.Fprintf(&sb, "Message: %q\n", p.message)
 	_, _ = fmt.Fprintf(&sb, "Answer : %s\n", p.answer.String())
 
 	if p.repeatability > 0 && (p.totalCalls != 0 || p.repeatability != 1) {
@@ -212,13 +173,10 @@ func (a *PasswordAnswer) String() string {
 }
 
 func newPassword(parent *Survey, message string) *Password {
-	message += " "
-
 	return &Password{
-		base:            &base{parent: parent},
-		message:         message,
-		expectedMessage: message,
-		answer:          noAnswer(),
+		base:    &base{parent: parent},
+		message: message,
+		answer:  noAnswer(),
 	}
 }
 
