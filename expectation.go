@@ -18,7 +18,7 @@ type base struct {
 	repeatability int
 
 	// Amount of times this request has been executed.
-	totalCalls int // nolint: structcheck
+	totalCalls int
 }
 
 func (b *base) lock() {
