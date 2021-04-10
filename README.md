@@ -34,7 +34,7 @@ Step 1: Create an expectation for the survey.
 Call `surveymock.Mock()`
 
 ```go
-survey := surveymock.Mock(func(s *surveymock.Survey) {
+s := surveymock.Mock(func(s *surveymock.Survey) {
     s.ExpectPassword("Enter a password:").
         Answer("secret")
 })(t) // t is *testing.T
@@ -45,7 +45,7 @@ Step 2: Run it.
 Important: Use the `stdio` arg and inject it into the `survey.Prompt` otherwise it won't work. 
 
 ```go
-survey.Start(func(stdio terminal.Stdio)) {
+s.Start(func(stdio terminal.Stdio)) {
     // For example
     p := &survey.Password{Message: "Enter a password:"}
     var answer string
