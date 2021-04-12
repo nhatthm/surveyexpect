@@ -233,6 +233,14 @@ func (s *Survey) ExpectationsWereMet() error {
 	return errors.New(sb.String())
 }
 
+// ResetExpectations resets all the expectations.
+func (s *Survey) ResetExpectations() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	s.expectations = nil
+}
+
 // stdio returns a terminal.Stdio of the given console.
 func stdio(c Console) terminal.Stdio {
 	return terminal.Stdio{
