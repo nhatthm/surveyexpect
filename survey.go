@@ -1,7 +1,6 @@
 package surveymock
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"io"
@@ -101,8 +100,8 @@ func (s *Survey) runExpectation(c Console) error {
 	return nil
 }
 
-// answer runs the expectations in background and notifies when it is done.
-func (s *Survey) answer(c Console, rawOutput StringWriter) <-chan struct{} {
+// Answer runs the expectations in background and notifies when it is done.
+func (s *Survey) Answer(c Console) <-chan struct{} {
 	done := make(chan struct{})
 
 	go func() {
@@ -132,8 +131,6 @@ func (s *Survey) answer(c Console, rawOutput StringWriter) <-chan struct{} {
 		}
 
 		c.ExpectEOF() // nolint: errcheck,gosec
-
-		s.test.Logf("Raw output: %q\n", rawOutput.String())
 
 		select {
 		case <-done:
@@ -196,7 +193,7 @@ func (s *Survey) Start(fn func(stdio terminal.Stdio)) {
 	defer s.startMu.Unlock()
 
 	// Setup a console.
-	buf := new(bytes.Buffer)
+	buf := new(Buffer)
 	console, state, err := vt10x.NewVT10XConsole(expect.WithStdout(buf))
 	require.Nil(s.test, err)
 
@@ -205,7 +202,9 @@ func (s *Survey) Start(fn func(stdio terminal.Stdio)) {
 
 	// Run the answer in background.
 	// Wait til the survey is done answering.
-	<-s.answer(console, buf)
+	<-s.Answer(console)
+
+	s.test.Logf("Raw output: %q\n", buf.String())
 
 	// Dump the terminal's screen.
 	s.test.Logf("%s\n", expect.StripTrailingEmptyLines(state.String()))
