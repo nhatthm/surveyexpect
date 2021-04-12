@@ -6,7 +6,7 @@ import (
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
 
-	"github.com/nhatthm/surveymock"
+	"github.com/nhatthm/surveymock/options"
 )
 
 // StdioProvider is a wrapper around *cobra.Command to provide stdin, stdout and stderr to survey.
@@ -28,7 +28,7 @@ func WithStdioProvider(p StdioProvider) survey.AskOpt {
 		return configureNothing
 	}
 
-	return surveymock.WithStdio(terminal.Stdio{
+	return options.WithStdio(terminal.Stdio{
 		In:  in,
 		Out: out,
 		Err: p.ErrOrStderr(),

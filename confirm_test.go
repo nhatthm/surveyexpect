@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/nhatthm/surveymock"
+	"github.com/nhatthm/surveymock/options"
 )
 
 func TestConfirm(t *testing.T) {
@@ -163,7 +164,7 @@ func TestConfirm(t *testing.T) {
 
 			// Start the survey.
 			s.Start(func(stdio terminal.Stdio) {
-				tc.options = append(tc.options, surveymock.WithStdio(stdio))
+				tc.options = append(tc.options, options.WithStdio(stdio))
 
 				var answer bool
 				err := survey.AskOne(p, &answer, tc.options...)
@@ -198,7 +199,7 @@ func TestConfirm_NoHelpButStillExpect(t *testing.T) {
 	// Start the survey.
 	s.Start(func(stdio terminal.Stdio) {
 		var answer bool
-		err := survey.AskOne(p, &answer, surveymock.WithStdio(stdio))
+		err := survey.AskOne(p, &answer, options.WithStdio(stdio))
 
 		assert.False(t, answer)
 		assert.NoError(t, err)
@@ -265,7 +266,7 @@ func TestConfirm_SurveyInterrupted(t *testing.T) {
 					"confirm":  true,
 					"password": "old password",
 				}
-				err := survey.Ask(questions, &result, surveymock.WithStdio(stdio))
+				err := survey.Ask(questions, &result, options.WithStdio(stdio))
 
 				assert.Equal(t, expectedResult, result)
 
