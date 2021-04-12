@@ -14,6 +14,9 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// ErrNoExpectation indicates that there is no expectation.
+var ErrNoExpectation = errors.New("no expectation")
+
 // StringWriter is a wrapper for bytes.Buffer.
 type StringWriter interface {
 	io.Writer
@@ -76,8 +79,16 @@ func (s *Survey) ExpectPassword(question string) *Password {
 	return e
 }
 
-// runExpectation runs an expectation against a given console.
-func (s *Survey) runExpectation(c Console) error {
+// Expect runs an expectation against a given console.
+func (s *Survey) Expect(c Console) error {
+	s.mu.Lock()
+	count := len(s.expectations)
+	s.mu.Unlock()
+
+	if count == 0 {
+		return ErrNoExpectation
+	}
+
 	s.mu.Lock()
 	e := s.expectations[0]
 	s.mu.Unlock()
@@ -100,21 +111,13 @@ func (s *Survey) runExpectation(c Console) error {
 	return nil
 }
 
-// Answer runs the expectations in background and notifies when it is done.
-func (s *Survey) Answer(c Console) <-chan struct{} {
+// answer runs the expectations in background and notifies when it is done.
+func (s *Survey) answer(c Console) <-chan struct{} {
 	done := make(chan struct{})
 
 	go func() {
 	expectations:
 		for {
-			s.mu.Lock()
-			count := len(s.expectations)
-			s.mu.Unlock()
-
-			if count == 0 {
-				break expectations
-			}
-
 			select {
 			case <-done:
 				// Already closed by timeout.
@@ -122,8 +125,10 @@ func (s *Survey) Answer(c Console) <-chan struct{} {
 
 			default:
 				// If not, we run the expectation.
-				if err := s.runExpectation(c); err != nil {
-					s.test.Errorf(err.Error())
+				if err := s.Expect(c); err != nil {
+					if !errors.Is(err, ErrNoExpectation) {
+						s.test.Errorf(err.Error())
+					}
 
 					break expectations
 				}
@@ -202,7 +207,7 @@ func (s *Survey) Start(fn func(stdio terminal.Stdio)) {
 
 	// Run the answer in background.
 	// Wait til the survey is done answering.
-	<-s.Answer(console)
+	<-s.answer(console)
 
 	s.test.Logf("Raw output: %q\n", buf.String())
 
