@@ -2,38 +2,27 @@ package surveymock_test
 
 import (
 	"fmt"
-	"strings"
-	"sync"
+
+	"github.com/nhatthm/surveymock"
 )
 
 type TestingT struct {
-	error strings.Builder
-	log   strings.Builder
+	error *surveymock.Buffer
+	log   *surveymock.Buffer
 
 	clean func()
-
-	mu sync.Mutex
 }
 
 func (t *TestingT) Errorf(format string, args ...interface{}) {
-	t.mu.Lock()
-	defer t.mu.Unlock()
-
-	_, _ = fmt.Fprintf(&t.error, format, args...)
+	_, _ = fmt.Fprintf(t.error, format, args...)
 }
 
 func (t *TestingT) Log(args ...interface{}) {
-	t.mu.Lock()
-	defer t.mu.Unlock()
-
-	_, _ = fmt.Fprintln(&t.log, args...)
+	_, _ = fmt.Fprintln(t.log, args...)
 }
 
 func (t *TestingT) Logf(format string, args ...interface{}) {
-	t.mu.Lock()
-	defer t.mu.Unlock()
-
-	_, _ = fmt.Fprintf(&t.log, format, args...)
+	_, _ = fmt.Fprintf(t.log, format, args...)
 }
 
 func (t *TestingT) FailNow() {
@@ -45,21 +34,17 @@ func (t *TestingT) Cleanup(clean func()) {
 }
 
 func (t *TestingT) ErrorString() string {
-	t.mu.Lock()
-	defer t.mu.Unlock()
-
 	return t.error.String()
 }
 
 func (t *TestingT) LogString() string {
-	t.mu.Lock()
-	defer t.mu.Unlock()
-
 	return t.log.String()
 }
 
 func T() *TestingT {
 	return &TestingT{
+		error: new(surveymock.Buffer),
+		log:   new(surveymock.Buffer),
 		clean: func() {},
 	}
 }
