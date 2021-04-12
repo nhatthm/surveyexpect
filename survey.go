@@ -59,8 +59,8 @@ func (s *Survey) expect(e Expectation) {
 //
 //    Survey.ExpectConfirm("Confirm?").
 //    	Yes()
-func (s *Survey) ExpectConfirm(question string) *Confirm {
-	e := newConfirm(s, question)
+func (s *Survey) ExpectConfirm(message string) *Confirm {
+	e := newConfirm(s, message)
 
 	s.expect(e)
 
@@ -71,8 +71,8 @@ func (s *Survey) ExpectConfirm(question string) *Confirm {
 //
 //    Survey.ExpectPassword("Enter password:").
 //    	Answer("hello world!")
-func (s *Survey) ExpectPassword(question string) *Password {
-	e := newPassword(s, question).Once()
+func (s *Survey) ExpectPassword(message string) *Password {
+	e := newPassword(s, message).Once()
 
 	s.expect(e)
 
