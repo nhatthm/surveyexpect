@@ -96,6 +96,8 @@ func (c *Confirm) Expect(console Console) error {
 		return err
 	}
 
+	_ = waitForCursorTwice(console) // nolint: errcheck
+
 	err = c.answer.Expect(console)
 	if err != nil && !errors.Is(err, terminal.InterruptErr) {
 		return err
@@ -145,15 +147,14 @@ func (a *ConfirmAnswer) Interrupted() {
 // Expect runs the expectation.
 // nolint: errcheck,gosec
 func (a *ConfirmAnswer) Expect(c Console) error {
-	c.Send(a.answer)
-
 	if a.interrupted {
+		c.Send(a.answer)
 		c.ExpectEOF()
 
 		return nil
 	}
 
-	c.SendLine("")
+	c.SendLine(a.answer)
 
 	if a.feedback != "" {
 		_, err := c.ExpectString(a.feedback)

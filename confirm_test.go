@@ -56,7 +56,7 @@ func TestConfirm(t *testing.T) {
 			expectedAnswer: true,
 		},
 		{
-			scenario: "password without help (yes)",
+			scenario: "confirm without help (yes)",
 			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
 				s.ExpectConfirm("Confirm?").Yes()
 			}),
@@ -64,7 +64,7 @@ func TestConfirm(t *testing.T) {
 			expectedAnswer: true,
 		},
 		{
-			scenario: "password without help (no)",
+			scenario: "confirm without help (no)",
 			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
 				s.ExpectConfirm("Confirm?").No()
 			}),

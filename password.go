@@ -66,6 +66,8 @@ func (p *Password) Expect(c Console) error {
 		return err
 	}
 
+	_ = waitForCursorTwice(c) // nolint: errcheck
+
 	err = p.answer.Expect(c)
 	if err != nil && !errors.Is(err, terminal.InterruptErr) {
 		return err
@@ -132,13 +134,20 @@ type PasswordAnswer struct {
 // Expect runs the expectation.
 // nolint: errcheck,gosec
 func (a *PasswordAnswer) Expect(c Console) error {
-	c.Send(a.answer)
-
 	if a.interrupted {
+		c.Send(a.answer)
 		c.ExpectEOF()
 
 		return nil
 	}
+
+	if a.answer == "" {
+		c.SendLine("")
+
+		return nil
+	}
+
+	c.Send(a.answer)
 
 	// Expect asterisks.
 	_, err := c.ExpectString(strings.Repeat("*", len(a.answer)))

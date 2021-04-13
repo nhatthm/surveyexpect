@@ -37,8 +37,7 @@ type InterruptAnswer struct{}
 // Expect runs the expectation.
 // nolint: errcheck,gosec
 func (a *InterruptAnswer) Expect(c Console) error {
-	c.Send(string(terminal.KeyInterrupt))
-	c.SendLine("")
+	c.SendLine(string(terminal.KeyInterrupt))
 
 	return terminal.InterruptErr
 }
@@ -60,8 +59,7 @@ type HelpAnswer struct {
 // Expect runs the expectation.
 // nolint: errcheck,gosec
 func (a *HelpAnswer) Expect(c Console) error {
-	c.Send("?")
-	c.SendLine("")
+	c.SendLine("?")
 
 	if _, err := c.ExpectString(a.help); err != nil {
 		return err
