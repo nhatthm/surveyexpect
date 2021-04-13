@@ -73,6 +73,9 @@ func (p *Password) Expect(c Console) error {
 		return err
 	}
 
+	p.lock()
+	defer p.unlock()
+
 	p.repeatability--
 	p.totalCalls++
 

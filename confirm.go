@@ -103,6 +103,9 @@ func (c *Confirm) Expect(console Console) error {
 		return err
 	}
 
+	c.lock()
+	defer c.unlock()
+
 	c.repeatability--
 	c.totalCalls++
 
