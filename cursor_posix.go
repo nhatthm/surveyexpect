@@ -16,7 +16,7 @@ func waitForCursor(c Console) error {
 	// After rendering the question, the prompt asks for the cursor's size and location (ESC[6n) and expects to receive
 	// `ESC[n;mR` in return before reading the answer. If the mock answers too fast (so the answer will be in between
 	// `ESC[n;mR` and reading answer), the prompt won't see the answer and hangs indefinitely.
-	<-time.After(2 * time.Millisecond)
+	<-time.After(ReactionTime)
 
 	return err
 }

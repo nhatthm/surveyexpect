@@ -1,6 +1,13 @@
 package surveymock
 
-import "github.com/AlecAivazis/survey/v2/terminal"
+import (
+	"time"
+
+	"github.com/AlecAivazis/survey/v2/terminal"
+)
+
+// ReactionTime is to create a small delay to simulate human reaction.
+var ReactionTime = 3 * time.Millisecond
 
 // Answer is an expectation for answering a question.
 type Answer interface {

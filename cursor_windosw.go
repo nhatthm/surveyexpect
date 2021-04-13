@@ -3,7 +3,7 @@
 package surveymock
 
 func waitForCursor(c Console) error {
-	<-time.After(2 * time.Millisecond)
+	<-time.After(ReactionTime)
 
 	return nil
 }
