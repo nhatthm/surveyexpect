@@ -46,19 +46,3 @@ func (b *base) Repeat() bool {
 
 	return b.repeatability > 0
 }
-
-func waitForCursor(c Console) error {
-	// ANSI escape sequence for DSR - Device Status Report
-	// https://en.wikipedia.org/wiki/ANSI_escape_code#CSI_sequences
-	_, err := c.ExpectString("\x1b[6n")
-
-	return err
-}
-
-func waitForCursorTwice(c Console) error {
-	if err := waitForCursor(c); err != nil {
-		return err
-	}
-
-	return waitForCursor(c)
-}
