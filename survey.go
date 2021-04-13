@@ -113,13 +113,15 @@ func (s *Survey) Expect(c Console) error {
 
 // answer runs the expectations in background and notifies when it is done.
 func (s *Survey) answer(c Console) <-chan struct{} {
-	done := make(chan struct{})
+	sig := signal()
 
 	go func() {
+		defer sig.close()
+
 	expectations:
 		for {
 			select {
-			case <-done:
+			case <-sig.done():
 				// Already closed by timeout.
 				break expectations
 
@@ -136,15 +138,6 @@ func (s *Survey) answer(c Console) <-chan struct{} {
 		}
 
 		c.ExpectEOF() // nolint: errcheck,gosec
-
-		select {
-		case <-done:
-			// Already closed by timeout.
-
-		default:
-			// If not, we close it.
-			close(done)
-		}
 	}()
 
 	// Force close when timeout.
@@ -152,18 +145,18 @@ func (s *Survey) answer(c Console) <-chan struct{} {
 		select {
 		case <-time.After(s.timeout):
 			s.test.Log("answer timeout exceeded")
-			close(done)
+			sig.close()
 
-		case <-done:
+		case <-sig.done():
 		}
 	}()
 
-	return done
+	return sig.done()
 }
 
 // ask runs the survey.
 func (s *Survey) ask(c Console, fn func(stdio terminal.Stdio)) {
-	done := make(chan struct{})
+	sig := signal()
 
 	go func() {
 		defer func() {
@@ -175,7 +168,7 @@ func (s *Survey) ask(c Console, fn func(stdio terminal.Stdio)) {
 			err = c.Close()
 			require.NoError(s.test, err)
 
-			close(done)
+			sig.close()
 		}()
 
 		fn(stdio(c))
@@ -186,7 +179,7 @@ func (s *Survey) ask(c Console, fn func(stdio terminal.Stdio)) {
 		case <-time.After(s.timeout):
 			s.test.Errorf("ask timeout exceeded")
 
-		case <-done:
+		case <-sig.done():
 			return
 		}
 	}()
