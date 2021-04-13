@@ -155,7 +155,7 @@ func (s *Survey) answer(c Console) <-chan struct{} {
 }
 
 // ask runs the survey.
-func (s *Survey) ask(c Console, fn func(stdio terminal.Stdio)) {
+func (s *Survey) ask(c Console, fn func(stdio terminal.Stdio)) <-chan struct{} {
 	sig := signal()
 
 	go func() {
@@ -178,11 +178,14 @@ func (s *Survey) ask(c Console, fn func(stdio terminal.Stdio)) {
 		select {
 		case <-time.After(s.timeout):
 			s.test.Errorf("ask timeout exceeded")
+			sig.close()
 
 		case <-sig.done():
 			return
 		}
 	}()
+
+	return sig.done()
 }
 
 // Start starts the survey with a default timeout.
@@ -196,11 +199,12 @@ func (s *Survey) Start(fn func(stdio terminal.Stdio)) {
 	require.Nil(s.test, err)
 
 	// Run the survey in background and close console when it is done.
-	s.ask(console, fn)
+	askDone := s.ask(console, fn)
 
 	// Run the answer in background.
 	// Wait til the survey is done answering.
 	<-s.answer(console)
+	<-askDone
 
 	s.test.Logf("Raw output: %q\n", buf.String())
 
