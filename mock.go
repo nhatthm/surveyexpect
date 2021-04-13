@@ -22,7 +22,8 @@ type MockOption func(s *Survey)
 // Mocker mocks survey.
 type Mocker func(t TestingT) *Survey
 
-func mock(t TestingT, mocks ...MockOption) *Survey {
+// New creates a new mocked survey.
+func New(t TestingT, mocks ...MockOption) *Survey {
 	s := &Survey{
 		test:    t,
 		timeout: 3 * time.Second,
@@ -39,7 +40,7 @@ func mock(t TestingT, mocks ...MockOption) *Survey {
 func Mock(mocks ...MockOption) Mocker {
 	return func(t TestingT) *Survey {
 		// Setup mocked survey.
-		s := mock(t, mocks...)
+		s := New(t, mocks...)
 
 		t.Cleanup(func() {
 			assert.NoError(t, s.ExpectationsWereMet())
