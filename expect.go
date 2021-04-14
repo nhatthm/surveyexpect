@@ -16,14 +16,14 @@ type TestingT interface {
 	Logf(format string, args ...interface{})
 }
 
-// ExpectOptions is option for the survey.
-type ExpectOptions func(s *Survey)
+// ExpectOption is option for the survey.
+type ExpectOption func(s *Survey)
 
 // Expector exp survey.
 type Expector func(t TestingT) *Survey
 
 // New creates a new expected survey.
-func New(t TestingT, options ...ExpectOptions) *Survey {
+func New(t TestingT, options ...ExpectOption) *Survey {
 	s := &Survey{
 		test:    t,
 		timeout: 3 * time.Second,
@@ -37,7 +37,7 @@ func New(t TestingT, options ...ExpectOptions) *Survey {
 }
 
 // Expect creates an expected survey with expectations and assures that ExpectationsWereMet() is called.
-func Expect(options ...ExpectOptions) Expector {
+func Expect(options ...ExpectOption) Expector {
 	return func(t TestingT) *Survey {
 		// Setup the survey.
 		s := New(t, options...)
