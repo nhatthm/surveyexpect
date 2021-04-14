@@ -1,4 +1,4 @@
-package surveymock
+package surveyexpect
 
 import (
 	"errors"
@@ -69,7 +69,7 @@ func (c *Confirm) No() {
 
 // Answer sets a custom answer to the prompt.
 //
-// If the answer is not not empty, the mock expects to have a feedback from the survey:
+// If the answer is not not empty, the survey expects to have a feedback from the prompt:
 //    `Sorry, your reply was invalid: "hello world!" is not a valid answer, please try again.`
 //
 //    Survey.ExpectConfirm("Are you sure to delete this file?").

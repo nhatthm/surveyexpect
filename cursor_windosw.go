@@ -1,6 +1,6 @@
 // +build windows
 
-package surveymock
+package surveyexpect
 
 func waitForCursor(c Console) error {
 	<-time.After(ReactionTime)

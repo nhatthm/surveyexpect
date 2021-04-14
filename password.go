@@ -1,4 +1,4 @@
-package surveymock
+package surveyexpect
 
 import (
 	"errors"

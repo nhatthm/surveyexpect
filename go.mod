@@ -1,4 +1,4 @@
-module github.com/nhatthm/surveymock
+module github.com/nhatthm/surveyexpect
 
 go 1.16
 

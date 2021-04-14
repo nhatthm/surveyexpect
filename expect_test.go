@@ -1,14 +1,14 @@
-package surveymock_test
+package surveyexpect_test
 
 import (
 	"fmt"
 
-	"github.com/nhatthm/surveymock"
+	"github.com/nhatthm/surveyexpect"
 )
 
 type TestingT struct {
-	error *surveymock.Buffer
-	log   *surveymock.Buffer
+	error *surveyexpect.Buffer
+	log   *surveyexpect.Buffer
 
 	clean func()
 }
@@ -43,8 +43,8 @@ func (t *TestingT) LogString() string {
 
 func T() *TestingT {
 	return &TestingT{
-		error: new(surveymock.Buffer),
-		log:   new(surveymock.Buffer),
+		error: new(surveyexpect.Buffer),
+		log:   new(surveyexpect.Buffer),
 		clean: func() {},
 	}
 }

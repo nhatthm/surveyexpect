@@ -1,4 +1,4 @@
-package surveymock_test
+package surveyexpect_test
 
 import (
 	"testing"
@@ -8,8 +8,8 @@ import (
 	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/nhatthm/surveymock"
-	"github.com/nhatthm/surveymock/options"
+	"github.com/nhatthm/surveyexpect"
+	"github.com/nhatthm/surveyexpect/options"
 )
 
 func TestConfirm(t *testing.T) {
@@ -17,7 +17,7 @@ func TestConfirm(t *testing.T) {
 
 	testCases := []struct {
 		scenario       string
-		mockSurvey     surveymock.Mocker
+		expectSurvey   surveyexpect.Expector
 		defaultValue   bool
 		help           string
 		showHelp       bool
@@ -27,20 +27,20 @@ func TestConfirm(t *testing.T) {
 	}{
 		{
 			scenario: "no answer sends an empty answer (default: false)",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectConfirm("Confirm?")
 			}),
 		},
 		{
 			scenario: "empty answer (default: false)",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectConfirm("Confirm?").
 					Answer("")
 			}),
 		},
 		{
 			scenario: "no answer sends an empty answer (default: true)",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectConfirm("Confirm?")
 			}),
 			defaultValue:   true,
@@ -48,7 +48,7 @@ func TestConfirm(t *testing.T) {
 		},
 		{
 			scenario: "empty answer (default: true)",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectConfirm("Confirm?").
 					Answer("")
 			}),
@@ -57,7 +57,7 @@ func TestConfirm(t *testing.T) {
 		},
 		{
 			scenario: "confirm without help (yes)",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectConfirm("Confirm?").Yes()
 			}),
 			defaultValue:   false,
@@ -65,7 +65,7 @@ func TestConfirm(t *testing.T) {
 		},
 		{
 			scenario: "confirm without help (no)",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectConfirm("Confirm?").No()
 			}),
 			defaultValue:   true,
@@ -73,7 +73,7 @@ func TestConfirm(t *testing.T) {
 		},
 		{
 			scenario: "confirm with visible help and do not ask for it",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectConfirm("Confirm? [? for help]").Yes()
 			}),
 			help:           "This is a helpful help",
@@ -82,7 +82,7 @@ func TestConfirm(t *testing.T) {
 		},
 		{
 			scenario: "confirm with visible help and ask for it",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectConfirm("Confirm? [? for help]").
 					ShowHelp("This is a helpful help")
 
@@ -94,7 +94,7 @@ func TestConfirm(t *testing.T) {
 		},
 		{
 			scenario: "confirm with invisible help and do not ask for it",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectConfirm("Confirm?").Yes()
 			}),
 			help:           "This is a helpful help",
@@ -102,7 +102,7 @@ func TestConfirm(t *testing.T) {
 		},
 		{
 			scenario: "confirm with invisible help and ask for it",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectConfirm("Confirm?").
 					ShowHelp("This is a helpful help")
 
@@ -113,7 +113,7 @@ func TestConfirm(t *testing.T) {
 		},
 		{
 			scenario: "input is interrupted",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectConfirm("Confirm?").
 					Interrupt()
 			}),
@@ -121,7 +121,7 @@ func TestConfirm(t *testing.T) {
 		},
 		{
 			scenario: "input contains invalid character",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectConfirm("Confirm?").
 					Answer("\033X").
 					Interrupted()
@@ -130,7 +130,7 @@ func TestConfirm(t *testing.T) {
 		},
 		{
 			scenario: "input is invalid",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectConfirm("Confirm?").
 					Answer("not a yes or no")
 
@@ -140,7 +140,7 @@ func TestConfirm(t *testing.T) {
 		},
 		{
 			scenario: "required does not affect confirm",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectConfirm("Confirm?")
 			}),
 			options: []survey.AskOpt{
@@ -156,7 +156,7 @@ func TestConfirm(t *testing.T) {
 			t.Parallel()
 
 			// Prepare the survey.
-			s := tc.mockSurvey(t)
+			s := tc.expectSurvey(t)
 			p := &survey.ConfirmTemplateData{
 				Confirm:  survey.Confirm{Message: "Confirm?", Help: tc.help, Default: tc.defaultValue},
 				ShowHelp: tc.showHelp,
@@ -185,7 +185,7 @@ func TestConfirm_NoHelpButStillExpect(t *testing.T) {
 	t.Parallel()
 
 	testingT := T()
-	s := surveymock.Mock(func(s *surveymock.Survey) {
+	s := surveyexpect.Expect(func(s *surveyexpect.Survey) {
 		s.WithTimeout(10 * time.Millisecond)
 
 		s.ExpectConfirm("Confirm?").
@@ -215,19 +215,19 @@ func TestConfirm_SurveyInterrupted(t *testing.T) {
 
 	testCases := []struct {
 		scenario      string
-		mockSurvey    surveymock.Mocker
+		expectSurvey  surveyexpect.Expector
 		expectedError string
 	}{
 		{
 			scenario: "interrupt",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectConfirm("Do you want to save your password?").Interrupt()
 			}),
 			expectedError: "interrupt",
 		},
 		{
 			scenario: "invalid input",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectConfirm("Do you want to save your password?").
 					Answer("\033X").
 					Interrupted()
@@ -242,7 +242,7 @@ func TestConfirm_SurveyInterrupted(t *testing.T) {
 			t.Parallel()
 
 			testingT := T()
-			s := tc.mockSurvey(testingT)
+			s := tc.expectSurvey(testingT)
 
 			questions := []*survey.Question{
 				{

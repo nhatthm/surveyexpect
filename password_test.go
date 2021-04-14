@@ -1,4 +1,4 @@
-package surveymock_test
+package surveyexpect_test
 
 import (
 	"testing"
@@ -8,8 +8,8 @@ import (
 	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/nhatthm/surveymock"
-	"github.com/nhatthm/surveymock/options"
+	"github.com/nhatthm/surveyexpect"
+	"github.com/nhatthm/surveyexpect/options"
 )
 
 func TestPassword(t *testing.T) {
@@ -17,7 +17,7 @@ func TestPassword(t *testing.T) {
 
 	testCases := []struct {
 		scenario       string
-		mockSurvey     surveymock.Mocker
+		expectSurvey   surveyexpect.Expector
 		message        string
 		help           string
 		showHelp       bool
@@ -27,14 +27,14 @@ func TestPassword(t *testing.T) {
 	}{
 		{
 			scenario: "no answer sends an empty line",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectPassword("Enter an empty password:")
 			}),
 			message: "Enter an empty password:",
 		},
 		{
 			scenario: "empty answer",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectPassword("Enter an empty password:").
 					Answer("")
 			}),
@@ -42,7 +42,7 @@ func TestPassword(t *testing.T) {
 		},
 		{
 			scenario: "password without help",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectPassword("Enter a password:").
 					Answer("secret")
 			}),
@@ -51,7 +51,7 @@ func TestPassword(t *testing.T) {
 		},
 		{
 			scenario: "password with visible help and do not ask for it",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectPassword("Enter a password: [? for help]").
 					Answer("secret")
 			}),
@@ -62,7 +62,7 @@ func TestPassword(t *testing.T) {
 		},
 		{
 			scenario: "password with visible help and ask for it",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectPassword("Enter a password: [? for help]").
 					ShowHelp("It is your secret")
 
@@ -76,7 +76,7 @@ func TestPassword(t *testing.T) {
 		},
 		{
 			scenario: "password with invisible help and do not ask for it",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectPassword("Enter a password:").
 					Answer("secret")
 			}),
@@ -86,7 +86,7 @@ func TestPassword(t *testing.T) {
 		},
 		{
 			scenario: "password with invisible help and ask for it",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectPassword("Enter a password:").
 					ShowHelp("It is your secret")
 
@@ -99,7 +99,7 @@ func TestPassword(t *testing.T) {
 		},
 		{
 			scenario: "input is interrupted",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectPassword("Enter a password:").
 					Times(10). // Times will be discarded due to the interruption.
 					Interrupt()
@@ -109,7 +109,7 @@ func TestPassword(t *testing.T) {
 		},
 		{
 			scenario: "input is invalid",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectPassword("Enter a password:").
 					Answer("\033X").
 					Interrupted()
@@ -119,7 +119,7 @@ func TestPassword(t *testing.T) {
 		},
 		{
 			scenario: "answer is required",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				// Be asked for 5 times without giving up the password.
 				s.ExpectPassword("Enter a password:").
 					Times(5)
@@ -142,7 +142,7 @@ func TestPassword(t *testing.T) {
 			t.Parallel()
 
 			// Prepare the survey.
-			s := tc.mockSurvey(t)
+			s := tc.expectSurvey(t)
 			p := &survey.PasswordTemplateData{
 				Password: survey.Password{Message: tc.message, Help: tc.help},
 				ShowHelp: tc.showHelp,
@@ -171,7 +171,7 @@ func TestPassword_NoHelpButStillExpect(t *testing.T) {
 	t.Parallel()
 
 	testingT := T()
-	s := surveymock.Mock(func(s *surveymock.Survey) {
+	s := surveyexpect.Expect(func(s *surveyexpect.Survey) {
 		s.WithTimeout(10 * time.Millisecond)
 
 		s.ExpectPassword("Enter a password:").
@@ -202,19 +202,19 @@ func TestPassword_SurveyInterrupted(t *testing.T) {
 
 	testCases := []struct {
 		scenario      string
-		mockSurvey    surveymock.Mocker
+		expectSurvey  surveyexpect.Expector
 		expectedError string
 	}{
 		{
 			scenario: "interrupt",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectPassword("Enter your username:").Interrupt()
 			}),
 			expectedError: "interrupt",
 		},
 		{
 			scenario: "invalid input",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectPassword("Enter your username:").
 					Answer("\033X").
 					Interrupted()
@@ -229,7 +229,7 @@ func TestPassword_SurveyInterrupted(t *testing.T) {
 			t.Parallel()
 
 			testingT := T()
-			s := tc.mockSurvey(testingT)
+			s := tc.expectSurvey(testingT)
 
 			questions := []*survey.Question{
 				{

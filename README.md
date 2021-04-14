@@ -1,12 +1,12 @@
-# Mock for `AlecAivazis/survey`
+# Expects for `AlecAivazis/survey`
 
-[![Build Status](https://github.com/nhatthm/surveymock/actions/workflows/test.yaml/badge.svg)](https://github.com/nhatthm/surveymock/actions/workflows/test.yaml)
-[![codecov](https://codecov.io/gh/nhatthm/surveymock/branch/master/graph/badge.svg?token=eTdAgDE2vR)](https://codecov.io/gh/nhatthm/surveymock)
-[![Go Report Card](https://goreportcard.com/badge/github.com/nhatthm/surveymock)](https://goreportcard.com/report/github.com/nhatthm/surveymock)
-[![GoDevDoc](https://img.shields.io/badge/dev-doc-00ADD8?logo=go)](https://pkg.go.dev/github.com/nhatthm/surveymock)
+[![Build Status](https://github.com/nhatthm/surveyexpect/actions/workflows/test.yaml/badge.svg)](https://github.com/nhatthm/surveyexpect/actions/workflows/test.yaml)
+[![codecov](https://codecov.io/gh/nhatthm/surveyexpect/branch/master/graph/badge.svg?token=eTdAgDE2vR)](https://codecov.io/gh/nhatthm/surveyexpect)
+[![Go Report Card](https://goreportcard.com/badge/github.com/nhatthm/surveyexpect)](https://goreportcard.com/report/github.com/nhatthm/surveyexpect)
+[![GoDevDoc](https://img.shields.io/badge/dev-doc-00ADD8?logo=go)](https://pkg.go.dev/github.com/nhatthm/surveyexpect)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?hosted_button_id=PJZSGJN57TDJY)
 
-**surveymock** is a mock library for [AlecAivazis/survey/v2](https://github.com/AlecAivazis/survey)
+**surveyexpect** is an Expect library for [AlecAivazis/survey/v2](https://github.com/AlecAivazis/survey)
 
 ## Prerequisites
 
@@ -15,7 +15,7 @@
 ## Install
 
 ```bash
-go get github.com/nhatthm/surveymock
+go get github.com/nhatthm/surveyexpect
 ```
 
 ## Usage
@@ -25,16 +25,16 @@ go get github.com/nhatthm/surveymock
 For now, it only supports [`Confirm`](https://github.com/AlecAivazis/survey#confirm) and [`Password`](https://github.com/AlecAivazis/survey#password)
 
 
-### Mock
+### Expect
 
 There are 2 steps:
 
-Step 1: Create an expectation for the survey.
+Step 1: Create an expectation.
 
-Call `surveymock.Mock()`
+Call `surveyexpect.Expect()`
 
 ```go
-s := surveymock.Mock(func(s *surveymock.Survey) {
+s := surveyexpect.Expect(func(s *surveyexpect.Survey) {
     s.ExpectPassword("Enter a password:").
         Answer("secret")
 })(t) // t is *testing.T
@@ -49,7 +49,7 @@ s.Start(func(stdio terminal.Stdio)) {
     // For example
     p := &survey.Password{Message: "Enter a password:"}
     var answer string
-    err := survey.AskOne(p, &answer, surveymock.WithStdio(stdio))
+    err := survey.AskOne(p, &answer, surveyexpect.WithStdio(stdio))
 
     // Asserts.
     assert.Equal(t, "123456", answer)
@@ -67,7 +67,7 @@ import (
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
-	"github.com/nhatthm/surveymock"
+	"github.com/nhatthm/surveyexpect"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -76,20 +76,20 @@ func TestMyPackage(t *testing.T) {
 
 	testCases := []struct {
 		scenario       string
-		mockSurvey     surveymock.Mocker
+		expectSurvey   surveyexpect.Expector
 		expectedAnswer string
 		expectedError  string
 	}{
 		{
 			scenario: "empty answer",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectPassword("Enter a password:").
 					Answer("")
 			}),
 		},
 		{
 			scenario: "password without help",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectPassword("Enter a password:").
 					Answer("secret")
 			}),
@@ -98,7 +98,7 @@ func TestMyPackage(t *testing.T) {
 
 		{
 			scenario: "input is interrupted",
-			mockSurvey: surveymock.Mock(func(s *surveymock.Survey) {
+			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectPassword("Enter a password:").
 					Interrupt()
 			}),
@@ -114,11 +114,11 @@ func TestMyPackage(t *testing.T) {
 			p := &survey.Password{Message: "Enter a password:"}
 
 			// Start the survey.
-			tc.mockSurvey(t).Start(func(stdio terminal.Stdio) {
+			tc.expectSurvey(t).Start(func(stdio terminal.Stdio) {
 				// Run your logic here.
 				// For example.
 				var answer string
-				err := survey.AskOne(p, &answer, surveymock.WithStdio(stdio))
+				err := survey.AskOne(p, &answer, surveyexpect.WithStdio(stdio))
 
 				assert.Equal(t, tc.expectedAnswer, answer)
 
@@ -133,7 +133,7 @@ func TestMyPackage(t *testing.T) {
 }
 ```
 
-You can find more examples in the tests of this library. For example: https://github.com/nhatthm/surveymock/blob/master/confirm_test.go or https://github.com/nhatthm/surveymock/blob/master/confirm_test.go
+You can find more examples in the tests of this library. For example: https://github.com/nhatthm/surveyexpect/blob/master/confirm_test.go or https://github.com/nhatthm/surveyexpect/blob/master/confirm_test.go
 
 ## Donation
 

@@ -1,6 +1,6 @@
-package surveymock
+package surveyexpect
 
-// Expectation is an expectation for mocking survey.
+// Expectation is an expectation for a survey.
 type Expectation interface {
 	// Expect runs the expectation.
 	Expect(c Console) error

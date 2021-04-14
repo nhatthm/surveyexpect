@@ -1,4 +1,4 @@
-package surveymock
+package surveyexpect
 
 import (
 	"errors"
@@ -23,12 +23,12 @@ type StringWriter interface {
 	fmt.Stringer
 }
 
-// Survey is a mocked survey.
+// Survey is a expectations container and responsible for testing the prompts.
 type Survey struct {
 	expectations []Expectation
 
-	// test is An optional variable that holds the test struct, to be used when an
-	// invalid mock call was made.
+	// test is An optional variable that holds the test struct, to be used for logging and raising error during the
+	// tests.
 	test TestingT
 
 	timeout time.Duration

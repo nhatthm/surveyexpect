@@ -1,4 +1,4 @@
-package surveymock
+package surveyexpect
 
 func waitForCursorTwice(c Console) error {
 	if err := waitForCursor(c); err != nil {

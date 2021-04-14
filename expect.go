@@ -1,4 +1,4 @@
-package surveymock
+package surveyexpect
 
 import (
 	"time"
@@ -16,31 +16,31 @@ type TestingT interface {
 	Logf(format string, args ...interface{})
 }
 
-// MockOption is option for mocking survey.
-type MockOption func(s *Survey)
+// ExpectOptions is option for the survey.
+type ExpectOptions func(s *Survey)
 
-// Mocker mocks survey.
-type Mocker func(t TestingT) *Survey
+// Expector exp survey.
+type Expector func(t TestingT) *Survey
 
-// New creates a new mocked survey.
-func New(t TestingT, mocks ...MockOption) *Survey {
+// New creates a new expected survey.
+func New(t TestingT, options ...ExpectOptions) *Survey {
 	s := &Survey{
 		test:    t,
 		timeout: 3 * time.Second,
 	}
 
-	for _, m := range mocks {
-		m(s)
+	for _, o := range options {
+		o(s)
 	}
 
 	return s
 }
 
-// Mock creates a mocked server with expectations and assures that ExpectationsWereMet() is called.
-func Mock(mocks ...MockOption) Mocker {
+// Expect creates an expected survey with expectations and assures that ExpectationsWereMet() is called.
+func Expect(options ...ExpectOptions) Expector {
 	return func(t TestingT) *Survey {
-		// Setup mocked survey.
-		s := New(t, mocks...)
+		// Setup the survey.
+		s := New(t, options...)
 
 		t.Cleanup(func() {
 			assert.NoError(t, s.ExpectationsWereMet())
