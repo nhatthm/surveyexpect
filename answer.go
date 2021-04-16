@@ -7,7 +7,7 @@ import (
 )
 
 // ReactionTime is to create a small delay to simulate human reaction.
-var ReactionTime = 3 * time.Millisecond
+var ReactionTime = 10 * time.Millisecond
 
 // Answer is an expectation for answering a question.
 type Answer interface {
