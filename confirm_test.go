@@ -28,20 +28,20 @@ func TestConfirm(t *testing.T) {
 		{
 			scenario: "no answer sends an empty answer (default: false)",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectConfirm("Confirm?")
+				s.ExpectConfirm("ConfirmPrompt?")
 			}),
 		},
 		{
 			scenario: "empty answer (default: false)",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectConfirm("Confirm?").
+				s.ExpectConfirm("ConfirmPrompt?").
 					Answer("")
 			}),
 		},
 		{
 			scenario: "no answer sends an empty answer (default: true)",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectConfirm("Confirm?")
+				s.ExpectConfirm("ConfirmPrompt?")
 			}),
 			defaultValue:   true,
 			expectedAnswer: true,
@@ -49,7 +49,7 @@ func TestConfirm(t *testing.T) {
 		{
 			scenario: "empty answer (default: true)",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectConfirm("Confirm?").
+				s.ExpectConfirm("ConfirmPrompt?").
 					Answer("")
 			}),
 			defaultValue:   true,
@@ -58,7 +58,7 @@ func TestConfirm(t *testing.T) {
 		{
 			scenario: "confirm without help (yes)",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectConfirm("Confirm?").Yes()
+				s.ExpectConfirm("ConfirmPrompt?").Yes()
 			}),
 			defaultValue:   false,
 			expectedAnswer: true,
@@ -66,7 +66,7 @@ func TestConfirm(t *testing.T) {
 		{
 			scenario: "confirm without help (no)",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectConfirm("Confirm?").No()
+				s.ExpectConfirm("ConfirmPrompt?").No()
 			}),
 			defaultValue:   true,
 			expectedAnswer: false,
@@ -74,7 +74,7 @@ func TestConfirm(t *testing.T) {
 		{
 			scenario: "confirm with visible help and do not ask for it",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectConfirm("Confirm? [? for help]").Yes()
+				s.ExpectConfirm("ConfirmPrompt? [? for help]").Yes()
 			}),
 			help:           "This is a helpful help",
 			showHelp:       true,
@@ -83,10 +83,10 @@ func TestConfirm(t *testing.T) {
 		{
 			scenario: "confirm with visible help and ask for it",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectConfirm("Confirm? [? for help]").
+				s.ExpectConfirm("ConfirmPrompt? [? for help]").
 					ShowHelp("This is a helpful help")
 
-				s.ExpectConfirm("Confirm?").Yes()
+				s.ExpectConfirm("ConfirmPrompt?").Yes()
 			}),
 			help:           "This is a helpful help",
 			showHelp:       true,
@@ -95,7 +95,7 @@ func TestConfirm(t *testing.T) {
 		{
 			scenario: "confirm with invisible help and do not ask for it",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectConfirm("Confirm?").Yes()
+				s.ExpectConfirm("ConfirmPrompt?").Yes()
 			}),
 			help:           "This is a helpful help",
 			expectedAnswer: true,
@@ -103,10 +103,10 @@ func TestConfirm(t *testing.T) {
 		{
 			scenario: "confirm with invisible help and ask for it",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectConfirm("Confirm?").
+				s.ExpectConfirm("ConfirmPrompt?").
 					ShowHelp("This is a helpful help")
 
-				s.ExpectConfirm("Confirm?").Yes()
+				s.ExpectConfirm("ConfirmPrompt?").Yes()
 			}),
 			help:           "This is a helpful help",
 			expectedAnswer: true,
@@ -114,7 +114,7 @@ func TestConfirm(t *testing.T) {
 		{
 			scenario: "input is interrupted",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectConfirm("Confirm?").
+				s.ExpectConfirm("ConfirmPrompt?").
 					Interrupt()
 			}),
 			expectedError: "interrupt",
@@ -122,7 +122,7 @@ func TestConfirm(t *testing.T) {
 		{
 			scenario: "input contains invalid character",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectConfirm("Confirm?").
+				s.ExpectConfirm("ConfirmPrompt?").
 					Answer("\033X").
 					Interrupted()
 			}),
@@ -131,17 +131,17 @@ func TestConfirm(t *testing.T) {
 		{
 			scenario: "input is invalid",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectConfirm("Confirm?").
+				s.ExpectConfirm("ConfirmPrompt?").
 					Answer("not a yes or no")
 
-				s.ExpectConfirm("Confirm?").Yes()
+				s.ExpectConfirm("ConfirmPrompt?").Yes()
 			}),
 			expectedAnswer: true,
 		},
 		{
 			scenario: "required does not affect confirm",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectConfirm("Confirm?")
+				s.ExpectConfirm("ConfirmPrompt?")
 			}),
 			options: []survey.AskOpt{
 				survey.WithValidator(survey.Required),
@@ -158,7 +158,7 @@ func TestConfirm(t *testing.T) {
 			// Prepare the survey.
 			s := tc.expectSurvey(t)
 			p := &survey.ConfirmTemplateData{
-				Confirm:  survey.Confirm{Message: "Confirm?", Help: tc.help, Default: tc.defaultValue},
+				Confirm:  survey.Confirm{Message: "ConfirmPrompt?", Help: tc.help, Default: tc.defaultValue},
 				ShowHelp: tc.showHelp,
 			}
 
@@ -188,13 +188,13 @@ func TestConfirm_NoHelpButStillExpect(t *testing.T) {
 	s := surveyexpect.Expect(func(s *surveyexpect.Survey) {
 		s.WithTimeout(10 * time.Millisecond)
 
-		s.ExpectConfirm("Confirm?").
+		s.ExpectConfirm("ConfirmPrompt?").
 			ShowHelp("It is your secret")
 	})(testingT)
 
-	expectedError := "there are remaining expectations that were not met:\n\nType   : Confirm\nMessage: \"Confirm?\"\nAnswer : ?\n"
+	expectedError := "there are remaining expectations that were not met:\n\nType   : ConfirmPrompt\nMessage: \"ConfirmPrompt?\"\nAnswer : ?\n"
 
-	p := &survey.Confirm{Message: "Confirm?"}
+	p := &survey.Confirm{Message: "ConfirmPrompt?"}
 
 	// Start the survey.
 	s.Start(func(stdio terminal.Stdio) {

@@ -9,13 +9,13 @@ import (
 )
 
 var (
-	_ Expectation = (*Confirm)(nil)
-	_ Answer      = (*ConfirmAnswer)(nil)
+	_ Prompt = (*ConfirmPrompt)(nil)
+	_ Answer = (*ConfirmAnswer)(nil)
 )
 
-// Confirm is an expectation of survey.Confirm.
-type Confirm struct {
-	*base
+// ConfirmPrompt is an expectation of survey.Confirm.
+type ConfirmPrompt struct {
+	*basePrompt
 
 	message string
 	answer  Answer
@@ -25,7 +25,7 @@ type Confirm struct {
 //
 //    Survey.ExpectConfirm("Are you sure to delete this file?").
 //    	ShowHelp("The file will be permanently deleted").
-func (c *Confirm) ShowHelp(help string) {
+func (c *ConfirmPrompt) ShowHelp(help string) {
 	c.lock()
 	defer c.unlock()
 
@@ -36,7 +36,7 @@ func (c *Confirm) ShowHelp(help string) {
 //
 //    Survey.ExpectConfirm("Are you sure to delete this file?").
 //    	Interrupt().
-func (c *Confirm) Interrupt() {
+func (c *ConfirmPrompt) Interrupt() {
 	c.lock()
 	defer c.unlock()
 
@@ -47,7 +47,7 @@ func (c *Confirm) Interrupt() {
 //
 //    Survey.ExpectConfirm("Are you sure to delete this file?").
 //    	Yes().
-func (c *Confirm) Yes() {
+func (c *ConfirmPrompt) Yes() {
 	c.lock()
 	defer c.unlock()
 
@@ -59,7 +59,7 @@ func (c *Confirm) Yes() {
 //
 //    Survey.ExpectConfirm("Are you sure to delete this file?").
 //    	No().
-func (c *Confirm) No() {
+func (c *ConfirmPrompt) No() {
 	c.lock()
 	defer c.unlock()
 
@@ -74,7 +74,7 @@ func (c *Confirm) No() {
 //
 //    Survey.ExpectConfirm("Are you sure to delete this file?").
 //    	Answer("hello world!").
-func (c *Confirm) Answer(answer string) *ConfirmAnswer {
+func (c *ConfirmPrompt) Answer(answer string) *ConfirmAnswer {
 	c.lock()
 	defer c.unlock()
 
@@ -90,7 +90,7 @@ func (c *Confirm) Answer(answer string) *ConfirmAnswer {
 }
 
 // Expect runs the expectation.
-func (c *Confirm) Expect(console Console) error {
+func (c *ConfirmPrompt) Expect(console Console) error {
 	_, err := console.ExpectString(c.message)
 	if err != nil {
 		return err
@@ -113,10 +113,10 @@ func (c *Confirm) Expect(console Console) error {
 }
 
 // String represents the expectation as a string.
-func (c *Confirm) String() string {
+func (c *ConfirmPrompt) String() string {
 	var sb strings.Builder
 
-	_, _ = sb.WriteString("Type   : Confirm\n")
+	_, _ = sb.WriteString("Type   : ConfirmPrompt\n")
 	_, _ = fmt.Fprintf(&sb, "Message: %q\n", c.message)
 	_, _ = fmt.Fprintf(&sb, "Answer : %s\n", c.answer.String())
 
@@ -125,7 +125,7 @@ func (c *Confirm) String() string {
 
 // ConfirmAnswer is an answer for confirm question.
 type ConfirmAnswer struct {
-	parent      *Confirm
+	parent      *ConfirmPrompt
 	answer      string
 	feedback    string
 	interrupted bool
@@ -184,9 +184,9 @@ func (a *ConfirmAnswer) String() string {
 	return sb.String()
 }
 
-func newConfirm(parent *Survey, message string) *Confirm {
-	return &Confirm{
-		base: &base{
+func newConfirm(parent *Survey, message string) *ConfirmPrompt {
+	return &ConfirmPrompt{
+		basePrompt: &basePrompt{
 			parent:        parent,
 			repeatability: 1,
 		},
@@ -195,7 +195,7 @@ func newConfirm(parent *Survey, message string) *Confirm {
 	}
 }
 
-func newConfirmAnswer(parent *Confirm, answer string) *ConfirmAnswer {
+func newConfirmAnswer(parent *ConfirmPrompt, answer string) *ConfirmAnswer {
 	return &ConfirmAnswer{
 		parent: parent,
 		answer: answer,

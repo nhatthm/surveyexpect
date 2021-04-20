@@ -9,13 +9,13 @@ import (
 )
 
 var (
-	_ Expectation = (*Password)(nil)
-	_ Answer      = (*PasswordAnswer)(nil)
+	_ Prompt = (*PasswordPrompt)(nil)
+	_ Answer = (*PasswordAnswer)(nil)
 )
 
-// Password is an expectation of survey.Password.
-type Password struct {
-	*base
+// PasswordPrompt is an expectation of survey.Password.
+type PasswordPrompt struct {
+	*basePrompt
 
 	message string
 	answer  Answer
@@ -25,7 +25,7 @@ type Password struct {
 //
 //    Survey.ExpectPassword("Enter password:").
 //    	ShowHelp("Your shiny password").
-func (p *Password) ShowHelp(help string) {
+func (p *PasswordPrompt) ShowHelp(help string) {
 	p.lock()
 	defer p.unlock()
 
@@ -37,7 +37,7 @@ func (p *Password) ShowHelp(help string) {
 //
 //    Survey.ExpectPassword("Enter password:").
 //    	Interrupt().
-func (p *Password) Interrupt() {
+func (p *PasswordPrompt) Interrupt() {
 	p.lock()
 	defer p.unlock()
 
@@ -49,7 +49,7 @@ func (p *Password) Interrupt() {
 //
 //    Survey.ExpectPassword("Enter password:").
 //    	Answer("hello world!").
-func (p *Password) Answer(answer string) *PasswordAnswer {
+func (p *PasswordPrompt) Answer(answer string) *PasswordAnswer {
 	p.lock()
 	defer p.unlock()
 
@@ -60,7 +60,7 @@ func (p *Password) Answer(answer string) *PasswordAnswer {
 }
 
 // Expect runs the expectation.
-func (p *Password) Expect(c Console) error {
+func (p *PasswordPrompt) Expect(c Console) error {
 	_, err := c.ExpectString(p.message)
 	if err != nil {
 		return err
@@ -83,10 +83,10 @@ func (p *Password) Expect(c Console) error {
 }
 
 // String represents the expectation as a string.
-func (p *Password) String() string {
+func (p *PasswordPrompt) String() string {
 	var sb strings.Builder
 
-	_, _ = sb.WriteString("Type   : Password\n")
+	_, _ = sb.WriteString("Type   : PasswordPrompt\n")
 	_, _ = fmt.Fprintf(&sb, "Message: %q\n", p.message)
 	_, _ = fmt.Fprintf(&sb, "Answer : %s\n", p.answer.String())
 
@@ -103,7 +103,7 @@ func (p *Password) String() string {
 //    Survey.ExpectPassword("Enter password:").
 //    	Answer("hello world!").
 //    	Once()
-func (p *Password) Once() *Password {
+func (p *PasswordPrompt) Once() *PasswordPrompt {
 	return p.Times(1)
 }
 
@@ -112,7 +112,7 @@ func (p *Password) Once() *Password {
 //    Survey.ExpectPassword("Enter password:").
 //    	Answer("hello world!").
 //    	Twice()
-func (p *Password) Twice() *Password {
+func (p *PasswordPrompt) Twice() *PasswordPrompt {
 	return p.Times(2)
 }
 
@@ -121,7 +121,7 @@ func (p *Password) Twice() *Password {
 //    Survey.ExpectPassword("Enter password:").
 //    	Answer("hello world!").
 //    	Times(5)
-func (p *Password) Times(i int) *Password {
+func (p *PasswordPrompt) Times(i int) *PasswordPrompt {
 	p.times(i)
 
 	return p
@@ -129,7 +129,7 @@ func (p *Password) Times(i int) *Password {
 
 // PasswordAnswer is an answer for password question.
 type PasswordAnswer struct {
-	parent      *Password
+	parent      *PasswordPrompt
 	answer      string
 	interrupted bool
 }
@@ -184,15 +184,15 @@ func (a *PasswordAnswer) String() string {
 	return sb.String()
 }
 
-func newPassword(parent *Survey, message string) *Password {
-	return &Password{
-		base:    &base{parent: parent},
-		message: message,
-		answer:  noAnswer(),
+func newPassword(parent *Survey, message string) *PasswordPrompt {
+	return &PasswordPrompt{
+		basePrompt: &basePrompt{parent: parent},
+		message:    message,
+		answer:     noAnswer(),
 	}
 }
 
-func newPasswordAnswer(parent *Password, answer string) *PasswordAnswer {
+func newPasswordAnswer(parent *PasswordPrompt, answer string) *PasswordAnswer {
 	return &PasswordAnswer{
 		parent: parent,
 		answer: answer,

@@ -25,7 +25,7 @@ type StringWriter interface {
 
 // Survey is a expectations container and responsible for testing the prompts.
 type Survey struct {
-	expectations []Expectation
+	expectations []Prompt
 
 	// test is An optional variable that holds the test struct, to be used for logging and raising error during the
 	// tests.
@@ -48,18 +48,18 @@ func (s *Survey) WithTimeout(t time.Duration) *Survey {
 }
 
 // expect adds a new expectation to the queue.
-func (s *Survey) expect(e Expectation) {
+func (s *Survey) expect(p Prompt) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	s.expectations = append(s.expectations, e)
+	s.expectations = append(s.expectations, p)
 }
 
-// ExpectConfirm expects a Confirm.
+// ExpectConfirm expects a ConfirmPrompt.
 //
-//    Survey.ExpectConfirm("Confirm?").
+//    Survey.ExpectConfirm("ConfirmPrompt?").
 //    	Yes()
-func (s *Survey) ExpectConfirm(message string) *Confirm {
+func (s *Survey) ExpectConfirm(message string) *ConfirmPrompt {
 	e := newConfirm(s, message)
 
 	s.expect(e)
@@ -67,11 +67,11 @@ func (s *Survey) ExpectConfirm(message string) *Confirm {
 	return e
 }
 
-// ExpectPassword expects a Password.
+// ExpectPassword expects a PasswordPrompt.
 //
 //    Survey.ExpectPassword("Enter password:").
 //    	Answer("hello world!")
-func (s *Survey) ExpectPassword(message string) *Password {
+func (s *Survey) ExpectPassword(message string) *PasswordPrompt {
 	e := newPassword(s, message).Once()
 
 	s.expect(e)

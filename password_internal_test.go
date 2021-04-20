@@ -41,18 +41,18 @@ func TestPassword_String(t *testing.T) {
 	}{
 		{
 			scenario: "repeat = 0",
-			expected: "Type   : Password\nMessage: \"Enter the password:\"\nAnswer : <no answer>\n",
+			expected: "Type   : PasswordPrompt\nMessage: \"Enter the password:\"\nAnswer : <no answer>\n",
 		},
 		{
 			scenario:      "repeat == 1 and called = 0",
 			repeatability: 1,
-			expected:      "Type   : Password\nMessage: \"Enter the password:\"\nAnswer : <no answer>\n",
+			expected:      "Type   : PasswordPrompt\nMessage: \"Enter the password:\"\nAnswer : <no answer>\n",
 		},
 		{
 			scenario:      "repeat > 0",
 			repeatability: 3,
 			totalCalls:    1,
-			expected:      "Type   : Password\nMessage: \"Enter the password:\"\nAnswer : <no answer>\n(called: 1 time(s), remaining: 3 time(s))\n",
+			expected:      "Type   : PasswordPrompt\nMessage: \"Enter the password:\"\nAnswer : <no answer>\n(called: 1 time(s), remaining: 3 time(s))\n",
 		},
 	}
 
@@ -61,8 +61,8 @@ func TestPassword_String(t *testing.T) {
 		t.Run(tc.scenario, func(t *testing.T) {
 			t.Parallel()
 
-			p := &Password{
-				base: &base{
+			p := &PasswordPrompt{
+				basePrompt: &basePrompt{
 					repeatability: tc.repeatability,
 					totalCalls:    tc.totalCalls,
 				},

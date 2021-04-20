@@ -1,48 +1,55 @@
 package surveyexpect
 
+import "strings"
+
 // Expectation is an expectation for a survey.
 type Expectation interface {
 	// Expect runs the expectation.
 	Expect(c Console) error
 
-	// Repeat tells survey to repeat the same expectation.
-	Repeat() bool
-
 	// String represents the expectation as a string.
 	String() string
 }
 
-type base struct {
-	parent *Survey
-
-	repeatability int
-
-	// Amount of times this request has been executed.
-	totalCalls int
+// SequenceExpectation is a chain of answers.
+type SequenceExpectation struct {
+	sequences []Expectation
 }
 
-func (b *base) lock() {
-	b.parent.mu.Lock()
+// Chain appends an expectation to the sequence.
+func (a *SequenceExpectation) Chain(more ...Expectation) *SequenceExpectation {
+	a.sequences = append(a.sequences, more...)
+
+	return a
 }
 
-func (b *base) unlock() {
-	b.parent.mu.Unlock()
+// Expect runs the expectation.
+// nolint: errcheck
+func (a *SequenceExpectation) Expect(c Console) error {
+	for _, s := range a.sequences {
+		if err := s.Expect(c); err != nil {
+			return err
+		}
+
+		_ = waitForCursorTwice(c)
+	}
+
+	return nil
 }
 
-func (b *base) times(i int) {
-	b.lock()
-	defer b.unlock()
+// String represents the answer as a string.
+func (a *SequenceExpectation) String() string {
+	result := make([]string, 0, len(a.sequences))
 
-	b.timesLocked(i)
+	for _, s := range a.sequences {
+		result = append(result, s.String())
+	}
+
+	return strings.Join(result, ", ")
 }
 
-func (b *base) timesLocked(i int) {
-	b.repeatability = i
-}
-
-func (b *base) Repeat() bool {
-	b.lock()
-	defer b.unlock()
-
-	return b.repeatability > 0
+func sequenceExpectation(chain ...Expectation) *SequenceExpectation {
+	return &SequenceExpectation{
+		sequences: chain,
+	}
 }
