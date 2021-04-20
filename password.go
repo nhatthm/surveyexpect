@@ -1,11 +1,8 @@
 package surveyexpect
 
 import (
-	"errors"
 	"fmt"
 	"strings"
-
-	"github.com/AlecAivazis/survey/v2/terminal"
 )
 
 var (
@@ -59,8 +56,8 @@ func (p *PasswordPrompt) Answer(answer string) *PasswordAnswer {
 	return a
 }
 
-// Expect runs the expectation.
-func (p *PasswordPrompt) Expect(c Console) error {
+// Do runs the step.
+func (p *PasswordPrompt) Do(c Console) error {
 	_, err := c.ExpectString(p.message)
 	if err != nil {
 		return err
@@ -68,8 +65,8 @@ func (p *PasswordPrompt) Expect(c Console) error {
 
 	_ = waitForCursorTwice(c) // nolint: errcheck
 
-	err = p.answer.Expect(c)
-	if err != nil && !errors.Is(err, terminal.InterruptErr) {
+	err = p.answer.Do(c)
+	if err != nil && !IsInterrupted(err) {
 		return err
 	}
 
@@ -79,7 +76,7 @@ func (p *PasswordPrompt) Expect(c Console) error {
 	p.repeatability--
 	p.totalCalls++
 
-	return err
+	return p.isDoneLocked(err)
 }
 
 // String represents the expectation as a string.
@@ -134,9 +131,9 @@ type PasswordAnswer struct {
 	interrupted bool
 }
 
-// Expect runs the expectation.
+// Do runs the step.
 // nolint: errcheck,gosec
-func (a *PasswordAnswer) Expect(c Console) error {
+func (a *PasswordAnswer) Do(c Console) error {
 	if a.interrupted {
 		c.Send(a.answer)
 		c.ExpectEOF()
@@ -152,7 +149,7 @@ func (a *PasswordAnswer) Expect(c Console) error {
 
 	c.Send(a.answer)
 
-	// Expect asterisks.
+	// Do asterisks.
 	_, err := c.ExpectString(strings.Repeat("*", len(a.answer)))
 	if err != nil {
 		return err

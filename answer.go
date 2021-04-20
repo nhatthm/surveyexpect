@@ -12,15 +12,15 @@ var ReactionTime = 10 * time.Millisecond
 
 // Answer is an expectation for answering a question.
 type Answer interface {
-	Expectation
+	Step
 }
 
 // NoAnswer sends an empty line to answer the question.
 type NoAnswer struct{}
 
-// Expect runs the expectation.
+// Do runs the step.
 // nolint: errcheck,gosec
-func (a *NoAnswer) Expect(c Console) error {
+func (a *NoAnswer) Do(c Console) error {
 	c.SendLine("")
 
 	return nil
@@ -38,9 +38,9 @@ func noAnswer() *NoAnswer {
 // InterruptAnswer sends an interrupt sequence to terminate the survey.
 type InterruptAnswer struct{}
 
-// Expect runs the expectation.
+// Do runs the step.
 // nolint: errcheck,gosec
-func (a *InterruptAnswer) Expect(c Console) error {
+func (a *InterruptAnswer) Do(c Console) error {
 	c.SendLine(string(terminal.KeyInterrupt))
 
 	return terminal.InterruptErr
@@ -60,9 +60,9 @@ type HelpAnswer struct {
 	help string
 }
 
-// Expect runs the expectation.
+// Do runs the step.
 // nolint: errcheck,gosec
-func (a *HelpAnswer) Expect(c Console) error {
+func (a *HelpAnswer) Do(c Console) error {
 	c.SendLine("?")
 
 	if _, err := c.ExpectString(a.help); err != nil {
@@ -87,9 +87,9 @@ type ActionAnswer struct {
 	action string
 }
 
-// Expect runs the expectation.
+// Do runs the step.
 // nolint: errcheck,gosec
-func (a *ActionAnswer) Expect(c Console) error {
+func (a *ActionAnswer) Do(c Console) error {
 	c.Send(string(a.code))
 
 	return nil
@@ -132,9 +132,9 @@ type TypeAnswer struct {
 	answer string
 }
 
-// Expect runs the expectation.
+// Do runs the step.
 // nolint: errcheck,gosec
-func (a *TypeAnswer) Expect(c Console) error {
+func (a *TypeAnswer) Do(c Console) error {
 	c.Send(a.answer)
 
 	return nil

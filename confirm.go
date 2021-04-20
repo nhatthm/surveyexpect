@@ -1,11 +1,8 @@
 package surveyexpect
 
 import (
-	"errors"
 	"fmt"
 	"strings"
-
-	"github.com/AlecAivazis/survey/v2/terminal"
 )
 
 var (
@@ -89,8 +86,8 @@ func (c *ConfirmPrompt) Answer(answer string) *ConfirmAnswer {
 	return a
 }
 
-// Expect runs the expectation.
-func (c *ConfirmPrompt) Expect(console Console) error {
+// Do runs the step.
+func (c *ConfirmPrompt) Do(console Console) error {
 	_, err := console.ExpectString(c.message)
 	if err != nil {
 		return err
@@ -98,8 +95,8 @@ func (c *ConfirmPrompt) Expect(console Console) error {
 
 	_ = waitForCursorTwice(console) // nolint: errcheck
 
-	err = c.answer.Expect(console)
-	if err != nil && !errors.Is(err, terminal.InterruptErr) {
+	err = c.answer.Do(console)
+	if err != nil && !IsInterrupted(err) {
 		return err
 	}
 
@@ -147,9 +144,9 @@ func (a *ConfirmAnswer) Interrupted() {
 	a.feedback = ""
 }
 
-// Expect runs the expectation.
+// Do runs the step.
 // nolint: errcheck,gosec
-func (a *ConfirmAnswer) Expect(c Console) error {
+func (a *ConfirmAnswer) Do(c Console) error {
 	if a.interrupted {
 		c.Send(a.answer)
 		c.ExpectEOF()

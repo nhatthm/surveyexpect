@@ -28,6 +28,7 @@ func TestPassword(t *testing.T) {
 		{
 			scenario: "no answer sends an empty line",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
+				s.WithTimeout(time.Hour)
 				s.ExpectPassword("Enter an empty password:")
 			}),
 			message: "Enter an empty password:",

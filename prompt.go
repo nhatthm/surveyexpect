@@ -2,10 +2,7 @@ package surveyexpect
 
 // Prompt is a prompt expectation for a survey.
 type Prompt interface {
-	Expectation
-
-	// Repeat tells survey to repeat the same expectation.
-	Repeat() bool
+	Step
 }
 
 type basePrompt struct {
@@ -36,9 +33,14 @@ func (p *basePrompt) timesLocked(i int) {
 	p.repeatability = i
 }
 
-func (p *basePrompt) Repeat() bool {
-	p.lock()
-	defer p.unlock()
+func (p *basePrompt) isDoneLocked(err error) error {
+	if err != nil {
+		return err
+	}
 
-	return p.repeatability > 0
+	if p.repeatability > 0 {
+		return ErrNotFinished
+	}
+
+	return nil
 }
