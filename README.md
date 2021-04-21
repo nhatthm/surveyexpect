@@ -24,12 +24,12 @@ go get github.com/nhatthm/surveyexpect
 
 Type | Supported | Supported Actions
 :--- | :---: | :---
-`Confirm` | ✓ | - Answer `yes`, `no` or a custom<br/>- Interrupt (`^C`)<br/>- Ask for help
+`Confirm` | ✓ | <ul><li>Answer `yes`, `no` or a custom</li><li>Interrupt (`^C`)</li><li>Ask for help</li></ul>
 `Editor` | ✘ |
-`Input` | ✓ | - Answer<br/>- No answer<br/>- Suggestions with navigation (Arrow Up `↑`, Arrow Down `↓`, Tab `⇆`, Esc `⎋`, Enter `⏎`)<br/>- Interrupt (`^C`)<br/>- Ask for help
+`Input` | ✓ | <li>Answer</li><li>No answer</li><li>Suggestions with navigation (Arrow Up `↑`, Arrow Down `↓`, Tab `⇆`, Esc `⎋`, Enter `⏎`)</li><li>Interrupt (`^C`)</li><li>Ask for help</li></ul>
 `Multiline` | ✘ |
 `Multiselect` | ✘ |  
-`Password` | ✓ | - Answer (+ check for `*`)<br/>- No answer<br/>- Interrupt (`^C`)<br/>- Ask for help
+`Password` | ✓ | <li>Answer (+ check for `*`)</li><li>No answer</li><li>Interrupt (`^C`)</li><li>Ask for help</li></ul>
 `Select` | ✘ |
 
 
