@@ -1,48 +1,74 @@
 package surveyexpect
 
-// Expectation is an expectation for a survey.
-type Expectation interface {
-	// Expect runs the expectation.
-	Expect(c Console) error
+import (
+	"fmt"
+	"regexp"
+)
 
-	// Repeat tells survey to repeat the same expectation.
-	Repeat() bool
+var indicatorRegex = regexp.MustCompile(`^([^ ]*\s+)(.*)`)
 
-	// String represents the expectation as a string.
-	String() string
+// SelectExpect expects strings from console.
+type SelectExpect []string
+
+// Do runs the step.
+func (e *SelectExpect) Do(c Console) error {
+	for _, o := range *e {
+		if _, err := c.ExpectString(o); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
-type base struct {
-	parent *Survey
+// String represents the answer as a string.
+func (e *SelectExpect) String() string {
+	breakdown := make([]map[string]string, 0)
 
-	repeatability int
+	var size int
 
-	// Amount of times this request has been executed.
-	totalCalls int
+	for _, o := range *e {
+		e := map[string]string{
+			"prefix": "",
+			"option": "",
+		}
+
+		if m := indicatorRegex.FindStringSubmatch(o); m != nil {
+			e["prefix"] = m[1]
+			e["option"] = m[2]
+			l := len(m[1])
+
+			if l > size {
+				size = l
+			}
+		} else {
+			e["option"] = o
+		}
+
+		breakdown = append(breakdown, e)
+	}
+
+	var (
+		sb  stringsBuilder
+		pad = fmt.Sprintf("%%-%ds", size)
+	)
+
+	sb.WriteLinef("Expect a select list:")
+
+	for i, o := range breakdown {
+		if i > 0 {
+			sb.WriteRune('\n')
+		}
+
+		sb.Writef(pad, o["prefix"]).
+			Writef(o["option"])
+	}
+
+	return sb.String()
 }
 
-func (b *base) lock() {
-	b.parent.mu.Lock()
-}
+func expectSelect(options ...string) *SelectExpect {
+	e := SelectExpect(options)
 
-func (b *base) unlock() {
-	b.parent.mu.Unlock()
-}
-
-func (b *base) times(i int) {
-	b.lock()
-	defer b.unlock()
-
-	b.timesLocked(i)
-}
-
-func (b *base) timesLocked(i int) {
-	b.repeatability = i
-}
-
-func (b *base) Repeat() bool {
-	b.lock()
-	defer b.unlock()
-
-	return b.repeatability > 0
+	return &e
 }

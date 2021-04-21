@@ -14,7 +14,7 @@ func TestSurvey_ExpectNoExpectation(t *testing.T) {
 	s := surveyexpect.Expect()(t)
 	err := s.Expect(nil)
 
-	assert.Equal(t, surveyexpect.ErrNoExpectation, err)
+	assert.Equal(t, surveyexpect.ErrNothingToDo, err)
 }
 
 func TestSurvey_ResetExpectations(t *testing.T) {

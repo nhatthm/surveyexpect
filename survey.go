@@ -14,9 +14,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// ErrNoExpectation indicates that there is no expectation.
-var ErrNoExpectation = errors.New("no expectation")
-
 // StringWriter is a wrapper for bytes.Buffer.
 type StringWriter interface {
 	io.Writer
@@ -25,7 +22,7 @@ type StringWriter interface {
 
 // Survey is a expectations container and responsible for testing the prompts.
 type Survey struct {
-	expectations []Expectation
+	steps Steps
 
 	// test is An optional variable that holds the test struct, to be used for logging and raising error during the
 	// tests.
@@ -47,88 +44,77 @@ func (s *Survey) WithTimeout(t time.Duration) *Survey {
 	return s
 }
 
-// expect adds a new expectation to the queue.
-func (s *Survey) expect(e Expectation) {
+// addStep adds a new step to the sequence.
+func (s *Survey) addStep(step Step) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	s.expectations = append(s.expectations, e)
+	s.steps.Append(step)
 }
 
-// ExpectConfirm expects a Confirm.
+// ExpectConfirm expects a ConfirmPrompt.
 //
-//    Survey.ExpectConfirm("Confirm?").
+//    Survey.ExpectConfirm("ConfirmPrompt?").
 //    	Yes()
-func (s *Survey) ExpectConfirm(message string) *Confirm {
+func (s *Survey) ExpectConfirm(message string) *ConfirmPrompt {
 	e := newConfirm(s, message)
 
-	s.expect(e)
+	s.addStep(e)
 
 	return e
 }
 
-// ExpectPassword expects a Password.
+// ExpectInput expects an InputPrompt.
+//
+//    Survey.ExpectInput("Enter password:").
+//    	Answer("hello world!")
+func (s *Survey) ExpectInput(message string) *InputPrompt {
+	e := newInput(s, message).Once()
+
+	s.addStep(e)
+
+	return e
+}
+
+// ExpectPassword expects a PasswordPrompt.
 //
 //    Survey.ExpectPassword("Enter password:").
 //    	Answer("hello world!")
-func (s *Survey) ExpectPassword(message string) *Password {
+func (s *Survey) ExpectPassword(message string) *PasswordPrompt {
 	e := newPassword(s, message).Once()
 
-	s.expect(e)
+	s.addStep(e)
 
 	return e
 }
 
 // Expect runs an expectation against a given console.
 func (s *Survey) Expect(c Console) error {
-	s.mu.Lock()
-	count := len(s.expectations)
-	s.mu.Unlock()
-
-	if count == 0 {
-		return ErrNoExpectation
-	}
-
-	s.mu.Lock()
-	e := s.expectations[0]
-	s.mu.Unlock()
-
-	if err := e.Expect(c); err != nil && !errors.Is(err, terminal.InterruptErr) {
+	if err := s.steps.DoFirst(c); !IsIgnoredError(err) {
 		return err
 	}
-
-	if e.Repeat() {
-		return nil
-	}
-
-	// Remove the expectation from the queue if it is not recurrent.
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	s.expectations[0] = nil
-	s.expectations = s.expectations[1:]
 
 	return nil
 }
 
 // answer runs the expectations in background and notifies when it is done.
 func (s *Survey) answer(c Console) <-chan struct{} {
-	sig := signal()
+	sig := NewSignal()
 
 	go func() {
-		defer sig.close()
+		defer sig.Notify()
 
 	expectations:
 		for {
 			select {
-			case <-sig.done():
+			case <-sig.Done():
 				// Already closed by timeout.
 				break expectations
 
 			default:
 				// If not, we run the expectation.
 				if err := s.Expect(c); err != nil {
-					if !errors.Is(err, ErrNoExpectation) {
+					if !IsNothingTodo(err) {
 						s.test.Errorf(err.Error())
 					}
 
@@ -145,18 +131,18 @@ func (s *Survey) answer(c Console) <-chan struct{} {
 		select {
 		case <-time.After(s.timeout):
 			s.test.Log("answer timeout exceeded")
-			sig.close()
+			sig.Notify()
 
-		case <-sig.done():
+		case <-sig.Done():
 		}
 	}()
 
-	return sig.done()
+	return sig.Done()
 }
 
 // ask runs the survey.
 func (s *Survey) ask(c Console, fn func(stdio terminal.Stdio)) <-chan struct{} {
-	sig := signal()
+	sig := NewSignal()
 
 	go func() {
 		defer func() {
@@ -168,7 +154,7 @@ func (s *Survey) ask(c Console, fn func(stdio terminal.Stdio)) <-chan struct{} {
 			err = c.Close()
 			require.NoError(s.test, err)
 
-			sig.close()
+			sig.Notify()
 		}()
 
 		fn(stdio(c))
@@ -178,14 +164,14 @@ func (s *Survey) ask(c Console, fn func(stdio terminal.Stdio)) <-chan struct{} {
 		select {
 		case <-time.After(s.timeout):
 			s.test.Errorf("ask timeout exceeded")
-			sig.close()
+			sig.Notify()
 
-		case <-sig.done():
+		case <-sig.Done():
 			return
 		}
 	}()
 
-	return sig.done()
+	return sig.Done()
 }
 
 // Start starts the survey with a default timeout.
@@ -218,18 +204,15 @@ func (s *Survey) ExpectationsWereMet() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	if len(s.expectations) == 0 {
+	err := s.steps.ExpectationsWereMet()
+	if err == nil {
 		return nil
 	}
 
 	var sb strings.Builder
 
-	sb.WriteString("there are remaining expectations that were not met:\n")
-
-	for _, e := range s.expectations {
-		sb.WriteRune('\n')
-		sb.WriteString(e.String())
-	}
+	sb.WriteString("there are remaining expectations that were not met:\n\n")
+	sb.WriteString(err.Error())
 
 	// nolint:goerr113
 	return errors.New(sb.String())
@@ -240,7 +223,7 @@ func (s *Survey) ResetExpectations() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	s.expectations = nil
+	s.steps.Reset()
 }
 
 // stdio returns a terminal.Stdio of the given console.

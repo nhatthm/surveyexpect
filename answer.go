@@ -1,6 +1,7 @@
 package surveyexpect
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -11,19 +12,15 @@ var ReactionTime = 10 * time.Millisecond
 
 // Answer is an expectation for answering a question.
 type Answer interface {
-	// Expect runs the expectation.
-	Expect(c Console) error
-
-	// String represents the answer as a string.
-	String() string
+	Step
 }
 
 // NoAnswer sends an empty line to answer the question.
 type NoAnswer struct{}
 
-// Expect runs the expectation.
+// Do runs the step.
 // nolint: errcheck,gosec
-func (a *NoAnswer) Expect(c Console) error {
+func (a *NoAnswer) Do(c Console) error {
 	c.SendLine("")
 
 	return nil
@@ -41,9 +38,9 @@ func noAnswer() *NoAnswer {
 // InterruptAnswer sends an interrupt sequence to terminate the survey.
 type InterruptAnswer struct{}
 
-// Expect runs the expectation.
+// Do runs the step.
 // nolint: errcheck,gosec
-func (a *InterruptAnswer) Expect(c Console) error {
+func (a *InterruptAnswer) Do(c Console) error {
 	c.SendLine(string(terminal.KeyInterrupt))
 
 	return terminal.InterruptErr
@@ -61,12 +58,13 @@ func interruptAnswer() *InterruptAnswer {
 // HelpAnswer sends a ? to show the help.
 type HelpAnswer struct {
 	help string
+	icon string
 }
 
-// Expect runs the expectation.
+// Do runs the step.
 // nolint: errcheck,gosec
-func (a *HelpAnswer) Expect(c Console) error {
-	c.SendLine("?")
+func (a *HelpAnswer) Do(c Console) error {
+	c.SendLine(a.icon)
 
 	if _, err := c.ExpectString(a.help); err != nil {
 		return err
@@ -77,9 +75,86 @@ func (a *HelpAnswer) Expect(c Console) error {
 
 // String represents the answer as a string.
 func (a *HelpAnswer) String() string {
-	return "?"
+	return a.icon
 }
 
-func helpAnswer(help string) *HelpAnswer {
-	return &HelpAnswer{help: help}
+func helpAnswer(help string, options ...string) *HelpAnswer {
+	if len(options) == 0 {
+		options = append(options, "?")
+	}
+
+	return &HelpAnswer{
+		help: help,
+		icon: options[0],
+	}
+}
+
+// ActionAnswer sends an action.
+type ActionAnswer struct {
+	code   int32
+	action string
+}
+
+// Do runs the step.
+// nolint: errcheck,gosec
+func (a *ActionAnswer) Do(c Console) error {
+	c.Send(string(a.code))
+
+	return nil
+}
+
+// String represents the answer as a string.
+func (a *ActionAnswer) String() string {
+	return fmt.Sprintf("press %s", a.action)
+}
+
+func actionAnswer(code int32, action string) *ActionAnswer {
+	return &ActionAnswer{
+		code:   code,
+		action: action,
+	}
+}
+
+func tabAnswer() *ActionAnswer {
+	return actionAnswer(terminal.KeyTab, "TAB")
+}
+
+func escAnswer() *ActionAnswer {
+	return actionAnswer(terminal.KeyEscape, "ESC")
+}
+
+func enterAnswer() *ActionAnswer {
+	return actionAnswer(terminal.KeyEnter, "ENTER")
+}
+
+func moveUpAnswer() *ActionAnswer {
+	return actionAnswer(terminal.KeyArrowUp, "MOVE UP")
+}
+
+func moveDownAnswer() *ActionAnswer {
+	return actionAnswer(terminal.KeyArrowDown, "MOVE DOWN")
+}
+
+// TypeAnswer types an answer.
+type TypeAnswer struct {
+	answer string
+}
+
+// Do runs the step.
+// nolint: errcheck,gosec
+func (a *TypeAnswer) Do(c Console) error {
+	c.Send(a.answer)
+
+	return nil
+}
+
+// String represents the answer as a string.
+func (a *TypeAnswer) String() string {
+	return fmt.Sprintf("type %q", a.answer)
+}
+
+func typeAnswer(answer string) *TypeAnswer {
+	return &TypeAnswer{
+		answer: answer,
+	}
 }

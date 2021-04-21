@@ -2,20 +2,22 @@ package surveyexpect
 
 import "sync"
 
-// signalCh is a safe chan to notify the others.
-type signalCh struct {
+// Signal is a safe chan to notify the others.
+type Signal struct {
 	mu sync.Mutex
 	ch chan struct{}
 }
 
-func (s *signalCh) done() <-chan struct{} {
+// Done checks whether the notification arrives or not.
+func (s *Signal) Done() <-chan struct{} {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	return s.ch
 }
 
-func (s *signalCh) close() {
+// Notify notifies the listeners.
+func (s *Signal) Notify() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -28,8 +30,9 @@ func (s *signalCh) close() {
 	}
 }
 
-func signal() *signalCh {
-	return &signalCh{
+// NewSignal creates a new Signal.
+func NewSignal() *Signal {
+	return &Signal{
 		ch: make(chan struct{}, 1),
 	}
 }

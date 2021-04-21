@@ -12,7 +12,7 @@ import (
 	"github.com/nhatthm/surveyexpect/options"
 )
 
-func TestPassword(t *testing.T) {
+func TestPasswordPrompt(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
@@ -167,19 +167,19 @@ func TestPassword(t *testing.T) {
 	}
 }
 
-func TestPassword_NoHelpButStillExpect(t *testing.T) {
+func TestPasswordPrompt_NoHelpButStillExpect(t *testing.T) {
 	t.Parallel()
 
 	testingT := T()
 	s := surveyexpect.Expect(func(s *surveyexpect.Survey) {
-		s.WithTimeout(10 * time.Millisecond)
+		s.WithTimeout(50 * time.Millisecond)
 
 		s.ExpectPassword("Enter a password:").
 			ShowHelp("It is your secret")
 	})(testingT)
 
 	expectedAnswer := "?"
-	expectedError := "there are remaining expectations that were not met:\n\nType   : Password\nMessage: \"Enter a password:\"\nAnswer : ?\n"
+	expectedError := "there are remaining expectations that were not met:\n\nExpect : Password Prompt\nMessage: \"Enter a password:\"\nAnswer : ?\n"
 
 	p := &survey.Password{Message: "Enter a password:"}
 
@@ -197,7 +197,7 @@ func TestPassword_NoHelpButStillExpect(t *testing.T) {
 	t.Log(testingT.LogString())
 }
 
-func TestPassword_SurveyInterrupted(t *testing.T) {
+func TestPasswordPrompt_SurveyInterrupted(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {

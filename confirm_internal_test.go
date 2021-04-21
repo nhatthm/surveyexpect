@@ -9,10 +9,10 @@ import (
 func TestConfirm_String(t *testing.T) {
 	t.Parallel()
 
-	expected := "Type   : Confirm\nMessage: \"Confirm?\"\nAnswer : <no answer>\n"
+	expected := "Expect : Confirm Prompt\nMessage: \"ConfirmPrompt?\"\nAnswer : <no answer>\n"
 
-	c := &Confirm{
-		message: "Confirm?",
+	c := &ConfirmPrompt{
+		message: "ConfirmPrompt?",
 		answer:  noAnswer(),
 	}
 

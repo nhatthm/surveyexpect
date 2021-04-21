@@ -1,21 +1,17 @@
 package surveyexpect
 
 import (
-	"errors"
-	"fmt"
 	"strings"
-
-	"github.com/AlecAivazis/survey/v2/terminal"
 )
 
 var (
-	_ Expectation = (*Password)(nil)
-	_ Answer      = (*PasswordAnswer)(nil)
+	_ Prompt = (*PasswordPrompt)(nil)
+	_ Answer = (*PasswordAnswer)(nil)
 )
 
-// Password is an expectation of survey.Password.
-type Password struct {
-	*base
+// PasswordPrompt is an expectation of survey.Password.
+type PasswordPrompt struct {
+	*basePrompt
 
 	message string
 	answer  Answer
@@ -24,20 +20,20 @@ type Password struct {
 // ShowHelp sets help for the expectation.
 //
 //    Survey.ExpectPassword("Enter password:").
-//    	ShowHelp("Your shiny password").
-func (p *Password) ShowHelp(help string) {
+//    	ShowHelp("Your shiny password")
+func (p *PasswordPrompt) ShowHelp(help string, options ...string) {
 	p.lock()
 	defer p.unlock()
 
-	p.answer = helpAnswer(help)
+	p.answer = helpAnswer(help, options...)
 	p.timesLocked(1)
 }
 
 // Interrupt marks the answer is interrupted.
 //
 //    Survey.ExpectPassword("Enter password:").
-//    	Interrupt().
-func (p *Password) Interrupt() {
+//    	Interrupt()
+func (p *PasswordPrompt) Interrupt() {
 	p.lock()
 	defer p.unlock()
 
@@ -48,8 +44,8 @@ func (p *Password) Interrupt() {
 // Answer sets the answer to the password prompt.
 //
 //    Survey.ExpectPassword("Enter password:").
-//    	Answer("hello world!").
-func (p *Password) Answer(answer string) *PasswordAnswer {
+//    	Answer("hello world!")
+func (p *PasswordPrompt) Answer(answer string) *PasswordAnswer {
 	p.lock()
 	defer p.unlock()
 
@@ -59,8 +55,8 @@ func (p *Password) Answer(answer string) *PasswordAnswer {
 	return a
 }
 
-// Expect runs the expectation.
-func (p *Password) Expect(c Console) error {
+// Do runs the step.
+func (p *PasswordPrompt) Do(c Console) error {
 	_, err := c.ExpectString(p.message)
 	if err != nil {
 		return err
@@ -68,8 +64,8 @@ func (p *Password) Expect(c Console) error {
 
 	_ = waitForCursorTwice(c) // nolint: errcheck
 
-	err = p.answer.Expect(c)
-	if err != nil && !errors.Is(err, terminal.InterruptErr) {
+	err = p.answer.Do(c)
+	if err != nil && !IsInterrupted(err) {
 		return err
 	}
 
@@ -79,20 +75,19 @@ func (p *Password) Expect(c Console) error {
 	p.repeatability--
 	p.totalCalls++
 
-	return err
+	return p.isDoneLocked(err)
 }
 
 // String represents the expectation as a string.
-func (p *Password) String() string {
-	var sb strings.Builder
+func (p *PasswordPrompt) String() string {
+	var sb stringsBuilder
 
-	_, _ = sb.WriteString("Type   : Password\n")
-	_, _ = fmt.Fprintf(&sb, "Message: %q\n", p.message)
-	_, _ = fmt.Fprintf(&sb, "Answer : %s\n", p.answer.String())
+	sb.WriteLabelLinef("Expect", "Password Prompt").
+		WriteLabelLinef("Message", "%q", p.message).
+		WriteLabelLinef("Answer", p.answer.String())
 
 	if p.repeatability > 0 && (p.totalCalls != 0 || p.repeatability != 1) {
-		_, _ = fmt.Fprintf(&sb, "(called: %d time(s), remaining: %d time(s))", p.totalCalls, p.repeatability)
-		_, _ = sb.WriteRune('\n')
+		sb.WriteLinef("(called: %d time(s), remaining: %d time(s))", p.totalCalls, p.repeatability)
 	}
 
 	return sb.String()
@@ -103,7 +98,7 @@ func (p *Password) String() string {
 //    Survey.ExpectPassword("Enter password:").
 //    	Answer("hello world!").
 //    	Once()
-func (p *Password) Once() *Password {
+func (p *PasswordPrompt) Once() *PasswordPrompt {
 	return p.Times(1)
 }
 
@@ -112,7 +107,7 @@ func (p *Password) Once() *Password {
 //    Survey.ExpectPassword("Enter password:").
 //    	Answer("hello world!").
 //    	Twice()
-func (p *Password) Twice() *Password {
+func (p *PasswordPrompt) Twice() *PasswordPrompt {
 	return p.Times(2)
 }
 
@@ -121,7 +116,7 @@ func (p *Password) Twice() *Password {
 //    Survey.ExpectPassword("Enter password:").
 //    	Answer("hello world!").
 //    	Times(5)
-func (p *Password) Times(i int) *Password {
+func (p *PasswordPrompt) Times(i int) *PasswordPrompt {
 	p.times(i)
 
 	return p
@@ -129,14 +124,14 @@ func (p *Password) Times(i int) *Password {
 
 // PasswordAnswer is an answer for password question.
 type PasswordAnswer struct {
-	parent      *Password
+	parent      *PasswordPrompt
 	answer      string
 	interrupted bool
 }
 
-// Expect runs the expectation.
+// Do runs the step.
 // nolint: errcheck,gosec
-func (a *PasswordAnswer) Expect(c Console) error {
+func (a *PasswordAnswer) Do(c Console) error {
 	if a.interrupted {
 		c.Send(a.answer)
 		c.ExpectEOF()
@@ -173,26 +168,26 @@ func (a *PasswordAnswer) Interrupted() {
 
 // String represents the answer as a string.
 func (a *PasswordAnswer) String() string {
-	var sb strings.Builder
+	var sb stringsBuilder
 
-	_, _ = fmt.Fprintf(&sb, "%q", a.answer)
+	sb.Writef("%q", a.answer)
 
 	if a.interrupted {
-		_, _ = sb.WriteString(" and get interrupted")
+		sb.WriteString(" and get interrupted")
 	}
 
 	return sb.String()
 }
 
-func newPassword(parent *Survey, message string) *Password {
-	return &Password{
-		base:    &base{parent: parent},
-		message: message,
-		answer:  noAnswer(),
+func newPassword(parent *Survey, message string) *PasswordPrompt {
+	return &PasswordPrompt{
+		basePrompt: &basePrompt{parent: parent},
+		message:    message,
+		answer:     noAnswer(),
 	}
 }
 
-func newPasswordAnswer(parent *Password, answer string) *PasswordAnswer {
+func newPasswordAnswer(parent *PasswordPrompt, answer string) *PasswordAnswer {
 	return &PasswordAnswer{
 		parent: parent,
 		answer: answer,

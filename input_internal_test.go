@@ -6,31 +6,31 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestPasswordPrompt_Once(t *testing.T) {
+func TestInputPrompt_Once(t *testing.T) {
 	t.Parallel()
 
-	p := newPassword(&Survey{}, "").Once()
+	p := newInput(&Survey{}, "").Once()
 
 	assert.Equal(t, 1, p.repeatability)
 }
 
-func TestPasswordPrompt_Twice(t *testing.T) {
+func TestInputPrompt_Twice(t *testing.T) {
 	t.Parallel()
 
-	p := newPassword(&Survey{}, "").Twice()
+	p := newInput(&Survey{}, "").Twice()
 
 	assert.Equal(t, 2, p.repeatability)
 }
 
-func TestPasswordPrompt_Times(t *testing.T) {
+func TestInputPrompt_Times(t *testing.T) {
 	t.Parallel()
 
-	p := newPassword(&Survey{}, "").Times(5)
+	p := newInput(&Survey{}, "").Times(5)
 
 	assert.Equal(t, 5, p.repeatability)
 }
 
-func TestPasswordPrompt_String(t *testing.T) {
+func TestInputPrompt_String(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
@@ -41,18 +41,18 @@ func TestPasswordPrompt_String(t *testing.T) {
 	}{
 		{
 			scenario: "repeat = 0",
-			expected: "Expect : Password Prompt\nMessage: \"Enter the password:\"\nAnswer : <no answer>\n",
+			expected: "Expect : Input Prompt\nMessage: \"Enter the username:\"\nAnswer : <no answer>\n",
 		},
 		{
 			scenario:      "repeat == 1 and called = 0",
 			repeatability: 1,
-			expected:      "Expect : Password Prompt\nMessage: \"Enter the password:\"\nAnswer : <no answer>\n",
+			expected:      "Expect : Input Prompt\nMessage: \"Enter the username:\"\nAnswer : <no answer>\n",
 		},
 		{
 			scenario:      "repeat > 0",
 			repeatability: 3,
 			totalCalls:    1,
-			expected:      "Expect : Password Prompt\nMessage: \"Enter the password:\"\nAnswer : <no answer>\n(called: 1 time(s), remaining: 3 time(s))\n",
+			expected:      "Expect : Input Prompt\nMessage: \"Enter the username:\"\nAnswer : <no answer>\n(called: 1 time(s), remaining: 3 time(s))\n",
 		},
 	}
 
@@ -61,12 +61,12 @@ func TestPasswordPrompt_String(t *testing.T) {
 		t.Run(tc.scenario, func(t *testing.T) {
 			t.Parallel()
 
-			p := &PasswordPrompt{
+			p := &InputPrompt{
 				basePrompt: &basePrompt{
 					repeatability: tc.repeatability,
 					totalCalls:    tc.totalCalls,
 				},
-				message: "Enter the password:",
+				message: "Enter the username:",
 				answer:  noAnswer(),
 			}
 
@@ -75,7 +75,7 @@ func TestPasswordPrompt_String(t *testing.T) {
 	}
 }
 
-func TestPasswordAnswer_String(t *testing.T) {
+func TestInputAnswer_String(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
@@ -85,12 +85,12 @@ func TestPasswordAnswer_String(t *testing.T) {
 	}{
 		{
 			scenario: "not interrupted",
-			expected: `"password"`,
+			expected: `"username"`,
 		},
 		{
 			scenario:    "interrupted",
 			interrupted: true,
-			expected:    `"password" and get interrupted`,
+			expected:    `"username" and get interrupted`,
 		},
 	}
 
@@ -99,8 +99,8 @@ func TestPasswordAnswer_String(t *testing.T) {
 		t.Run(tc.scenario, func(t *testing.T) {
 			t.Parallel()
 
-			a := &PasswordAnswer{
-				answer:      "password",
+			a := &InputAnswer{
+				answer:      "username",
 				interrupted: tc.interrupted,
 			}
 
