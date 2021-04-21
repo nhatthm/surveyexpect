@@ -2,7 +2,6 @@ package surveyexpect
 
 import (
 	"errors"
-	"strings"
 	"sync"
 
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -47,11 +46,7 @@ func (s *Steps) Append(more ...Step) *Steps {
 
 // Do runs the step.
 func (s *Steps) Do(c Console) error {
-	s.lock()
-	cnt := len(s.steps)
-	s.unlock()
-
-	if cnt == 0 {
+	if s.HasNothingToDo() {
 		return ErrNothingToDo
 	}
 
@@ -82,13 +77,21 @@ func (s *Steps) Do(c Console) error {
 
 // String represents the answer as a string.
 func (s *Steps) String() string {
-	result := make([]string, 0, len(s.steps))
-
-	for _, s := range s.steps {
-		result = append(result, s.String())
+	if s.HasNothingToDo() {
+		return ""
 	}
 
-	return strings.Join(result, ", ")
+	s.lock()
+	defer s.unlock()
+
+	var sb stringsBuilder
+
+	for _, step := range s.steps {
+		_, _ = sb.WriteRune('\n')
+		_, _ = sb.WriteString(step.String())
+	}
+
+	return sb.String()
 }
 
 // Reset removes all the steps.
@@ -99,25 +102,28 @@ func (s *Steps) Reset() {
 	s.steps = nil
 }
 
-// ExpectationsWereMet checks whether all queued expectations were met in order.
-// If any of them was not met - an error is returned.
-func (s *Steps) ExpectationsWereMet() error {
+// Len returns the number of steps.
+func (s *Steps) Len() int {
 	s.lock()
 	defer s.unlock()
 
-	if len(s.steps) == 0 {
+	return len(s.steps)
+}
+
+// HasNothingToDo checks whether the steps are not empty.
+func (s *Steps) HasNothingToDo() bool {
+	return s.Len() == 0
+}
+
+// ExpectationsWereMet checks whether all queued expectations were met in order.
+// If any of them was not met - an error is returned.
+func (s *Steps) ExpectationsWereMet() error {
+	if s.HasNothingToDo() {
 		return nil
 	}
 
-	var sb strings.Builder
-
-	for _, step := range s.steps {
-		sb.WriteRune('\n')
-		sb.WriteString(step.String())
-	}
-
 	// nolint:goerr113
-	return errors.New(sb.String())
+	return errors.New(s.String())
 }
 
 func steps(steps ...Step) *Steps {

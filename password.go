@@ -81,15 +81,14 @@ func (p *PasswordPrompt) Do(c Console) error {
 
 // String represents the expectation as a string.
 func (p *PasswordPrompt) String() string {
-	var sb strings.Builder
+	var sb stringsBuilder
 
-	_, _ = sb.WriteString("Type   : PasswordPrompt\n")
-	_, _ = fmt.Fprintf(&sb, "Message: %q\n", p.message)
-	_, _ = fmt.Fprintf(&sb, "Answer : %s\n", p.answer.String())
+	sb.WriteLabelLinef("Expect", "Password Prompt").
+		WriteLabelLinef("Message", "%q", p.message).
+		WriteLabelLinef("Answer", "%s", p.answer)
 
 	if p.repeatability > 0 && (p.totalCalls != 0 || p.repeatability != 1) {
-		_, _ = fmt.Fprintf(&sb, "(called: %d time(s), remaining: %d time(s))", p.totalCalls, p.repeatability)
-		_, _ = sb.WriteRune('\n')
+		sb.WriteLinef("(called: %d time(s), remaining: %d time(s))", p.totalCalls, p.repeatability)
 	}
 
 	return sb.String()

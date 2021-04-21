@@ -111,13 +111,12 @@ func (c *ConfirmPrompt) Do(console Console) error {
 
 // String represents the expectation as a string.
 func (c *ConfirmPrompt) String() string {
-	var sb strings.Builder
+	var sb stringsBuilder
 
-	_, _ = sb.WriteString("Type   : ConfirmPrompt\n")
-	_, _ = fmt.Fprintf(&sb, "Message: %q\n", c.message)
-	_, _ = fmt.Fprintf(&sb, "Answer : %s\n", c.answer.String())
-
-	return sb.String()
+	return sb.WriteLabelLinef("Expect", "Confirm Prompt").
+		WriteLabelLinef("Message", "%q", c.message).
+		WriteLabelLinef("Answer", "%s", c.answer).
+		String()
 }
 
 // ConfirmAnswer is an answer for confirm question.

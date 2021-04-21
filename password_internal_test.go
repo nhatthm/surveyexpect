@@ -41,18 +41,18 @@ func TestPassword_String(t *testing.T) {
 	}{
 		{
 			scenario: "repeat = 0",
-			expected: "Type   : PasswordPrompt\nMessage: \"Enter the password:\"\nAnswer : <no answer>\n",
+			expected: "Expect : Password Prompt\nMessage: \"Enter the password:\"\nAnswer : <no answer>\n",
 		},
 		{
 			scenario:      "repeat == 1 and called = 0",
 			repeatability: 1,
-			expected:      "Type   : PasswordPrompt\nMessage: \"Enter the password:\"\nAnswer : <no answer>\n",
+			expected:      "Expect : Password Prompt\nMessage: \"Enter the password:\"\nAnswer : <no answer>\n",
 		},
 		{
 			scenario:      "repeat > 0",
 			repeatability: 3,
 			totalCalls:    1,
-			expected:      "Type   : PasswordPrompt\nMessage: \"Enter the password:\"\nAnswer : <no answer>\n(called: 1 time(s), remaining: 3 time(s))\n",
+			expected:      "Expect : Password Prompt\nMessage: \"Enter the password:\"\nAnswer : <no answer>\n(called: 1 time(s), remaining: 3 time(s))\n",
 		},
 	}
 

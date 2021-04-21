@@ -180,7 +180,7 @@ func TestPassword_NoHelpButStillExpect(t *testing.T) {
 	})(testingT)
 
 	expectedAnswer := "?"
-	expectedError := "there are remaining expectations that were not met:\n\nType   : PasswordPrompt\nMessage: \"Enter a password:\"\nAnswer : ?\n"
+	expectedError := "there are remaining expectations that were not met:\n\nExpect : Password Prompt\nMessage: \"Enter a password:\"\nAnswer : ?\n"
 
 	p := &survey.Password{Message: "Enter a password:"}
 

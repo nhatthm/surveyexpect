@@ -192,7 +192,7 @@ func TestConfirm_NoHelpButStillExpect(t *testing.T) {
 			ShowHelp("It is your secret")
 	})(testingT)
 
-	expectedError := "there are remaining expectations that were not met:\n\nType   : ConfirmPrompt\nMessage: \"ConfirmPrompt?\"\nAnswer : ?\n"
+	expectedError := "there are remaining expectations that were not met:\n\nExpect : Confirm Prompt\nMessage: \"ConfirmPrompt?\"\nAnswer : ?\n"
 
 	p := &survey.Confirm{Message: "ConfirmPrompt?"}
 
