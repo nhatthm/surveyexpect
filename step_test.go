@@ -15,7 +15,7 @@ func TestSteps_Append(t *testing.T) {
 		s := steps()
 
 		assert.NotPanics(t, func() {
-			s.Append(tabAnswer())
+			s.Append(pressTab())
 		})
 	})
 
@@ -26,7 +26,7 @@ func TestSteps_Append(t *testing.T) {
 		s.Close()
 
 		assert.Panics(t, func() {
-			s.Append(tabAnswer())
+			s.Append(pressTab())
 		})
 	})
 }
@@ -47,9 +47,9 @@ func TestSteps_String(t *testing.T) {
 
 		s := steps()
 
-		s.Append(moveDownAnswer())
+		s.Append(pressArrowDown())
 
-		expectedResult := "press MOVE DOWN"
+		expectedResult := "press ARROW DOWN"
 
 		assert.Equal(t, expectedResult, s.String())
 	})
@@ -58,12 +58,12 @@ func TestSteps_String(t *testing.T) {
 		t.Parallel()
 
 		s := steps(
-			moveUpAnswer(),
+			pressArrowUp(),
 		)
 
-		s.Append(moveDownAnswer(), enterAnswer(), escAnswer(), tabAnswer(), typeAnswer("hello"))
+		s.Append(pressArrowDown(), pressEnter(), pressEsc(), pressTab(), typeAnswer("hello"))
 
-		expectedResult := "press MOVE UP\n\npress MOVE DOWN\n\npress ENTER\n\npress ESC\n\npress TAB\n\ntype \"hello\""
+		expectedResult := "press ARROW UP\n\npress ARROW DOWN\n\npress ENTER\n\npress ESC\n\npress TAB\n\ntype \"hello\""
 
 		assert.Equal(t, expectedResult, s.String())
 	})
@@ -71,11 +71,11 @@ func TestSteps_String(t *testing.T) {
 	t.Run("reset and re-append", func(t *testing.T) {
 		t.Parallel()
 
-		s := steps(moveUpAnswer())
+		s := steps(pressArrowUp())
 		s.Reset()
-		s.Append(moveDownAnswer())
+		s.Append(pressArrowDown())
 
-		expectedResult := "press MOVE DOWN"
+		expectedResult := "press ARROW DOWN"
 
 		assert.Equal(t, expectedResult, s.String())
 	})

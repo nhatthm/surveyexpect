@@ -21,7 +21,7 @@ type InputPrompt struct {
 // ShowHelp sets help for the expectation.
 //
 //    Survey.ExpectInput("Enter username:").
-//    	ShowHelp("Your shiny password")
+//    	ShowHelp("It's your email")
 func (p *InputPrompt) ShowHelp(help string, options ...string) {
 	p.lock()
 	defer p.unlock()
@@ -78,7 +78,7 @@ func (p *InputPrompt) Tab() *InputSuggestionSteps {
 	p.lock()
 	defer p.unlock()
 
-	a := newInputSuggestionSteps(p, tabAnswer())
+	a := newInputSuggestionSteps(p, pressTab())
 	p.answer = a
 
 	return a
@@ -229,28 +229,34 @@ func (a *InputSuggestionSteps) append(s Step) *InputSuggestionSteps {
 
 // Tab sends the TAB key.
 func (a *InputSuggestionSteps) Tab() *InputSuggestionSteps {
-	return a.append(tabAnswer())
+	return a.append(pressTab())
 }
 
 // Esc sends the ESC key.
 func (a *InputSuggestionSteps) Esc() *InputSuggestionSteps {
-	return a.append(escAnswer())
+	return a.append(pressEsc())
 }
 
 // Enter sends the ENTER key and ends the sequence.
 func (a *InputSuggestionSteps) Enter() {
-	a.append(enterAnswer())
+	a.append(pressEnter())
+	a.steps.Close()
+}
+
+// Interrupt sends ^C and ends the sequence.
+func (a *InputSuggestionSteps) Interrupt() {
+	a.append(pressInterrupt())
 	a.steps.Close()
 }
 
 // MoveUp sends the ARROW UP key.
 func (a *InputSuggestionSteps) MoveUp() *InputSuggestionSteps {
-	return a.append(moveUpAnswer())
+	return a.append(pressArrowUp())
 }
 
 // MoveDown sends the ARROW DOWN key.
 func (a *InputSuggestionSteps) MoveDown() *InputSuggestionSteps {
-	return a.append(moveDownAnswer())
+	return a.append(pressArrowDown())
 }
 
 // Type sends a string without enter.

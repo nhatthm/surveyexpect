@@ -88,6 +88,18 @@ func (s *Survey) ExpectPassword(message string) *PasswordPrompt {
 	return e
 }
 
+// ExpectSelect expects a SelectPrompt.
+//
+//    Survey.ExpectSelect("Enter password:").
+//    	Enter()
+func (s *Survey) ExpectSelect(message string) *SelectPrompt {
+	e := newSelect(s, message)
+
+	s.addStep(e)
+
+	return e
+}
+
 // Expect runs an expectation against a given console.
 func (s *Survey) Expect(c Console) error {
 	if err := s.steps.DoFirst(c); !IsIgnoredError(err) {
