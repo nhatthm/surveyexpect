@@ -85,7 +85,7 @@ func (p *PasswordPrompt) String() string {
 
 	sb.WriteLabelLinef("Expect", "Password Prompt").
 		WriteLabelLinef("Message", "%q", p.message).
-		WriteLabelLinef("Answer", "%s", p.answer)
+		WriteLabelLinef("Answer", p.answer.String())
 
 	if p.repeatability > 0 && (p.totalCalls != 0 || p.repeatability != 1) {
 		sb.WriteLinef("(called: %d time(s), remaining: %d time(s))", p.totalCalls, p.repeatability)

@@ -105,7 +105,7 @@ func (a *ActionAnswer) Do(c Console) error {
 
 // String represents the answer as a string.
 func (a *ActionAnswer) String() string {
-	return a.action
+	return fmt.Sprintf("press %s", a.action)
 }
 
 func actionAnswer(code int32, action string) *ActionAnswer {
@@ -116,23 +116,23 @@ func actionAnswer(code int32, action string) *ActionAnswer {
 }
 
 func tabAnswer() *ActionAnswer {
-	return actionAnswer(terminal.KeyTab, "press TAB")
+	return actionAnswer(terminal.KeyTab, "TAB")
 }
 
 func escAnswer() *ActionAnswer {
-	return actionAnswer(terminal.KeyEscape, "press ESC")
+	return actionAnswer(terminal.KeyEscape, "ESC")
 }
 
 func enterAnswer() *ActionAnswer {
-	return actionAnswer(terminal.KeyEnter, "press ENTER")
+	return actionAnswer(terminal.KeyEnter, "ENTER")
 }
 
 func moveUpAnswer() *ActionAnswer {
-	return actionAnswer(terminal.KeyEnter, "press MOVE UP")
+	return actionAnswer(terminal.KeyEnter, "MOVE UP")
 }
 
 func moveDownAnswer() *ActionAnswer {
-	return actionAnswer(terminal.KeyEnter, "press MOVE DOWN")
+	return actionAnswer(terminal.KeyEnter, "MOVE DOWN")
 }
 
 // TypeAnswer types an answer.

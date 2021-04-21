@@ -115,7 +115,7 @@ func (c *ConfirmPrompt) String() string {
 
 	return sb.WriteLabelLinef("Expect", "Confirm Prompt").
 		WriteLabelLinef("Message", "%q", c.message).
-		WriteLabelLinef("Answer", "%s", c.answer).
+		WriteLabelLinef("Answer", c.answer.String()).
 		String()
 }
 
