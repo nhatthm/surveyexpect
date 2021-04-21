@@ -240,6 +240,7 @@ func (a *InputSuggestionSteps) Esc() *InputSuggestionSteps {
 // Enter sends the ENTER key and ends the sequence.
 func (a *InputSuggestionSteps) Enter() {
 	a.append(enterAnswer())
+	a.steps.Close()
 }
 
 // MoveUp sends the ARROW UP key.
