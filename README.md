@@ -22,7 +22,15 @@ go get github.com/nhatthm/surveyexpect
 
 ### Supported Types
 
-For now, it only supports [`Confirm`](https://github.com/AlecAivazis/survey#confirm) and [`Password`](https://github.com/AlecAivazis/survey#password)
+Type | Supported | Supported Actions
+:--- | :---: | :---
+`Confirm` | ✓ | - Answer `yes`, `no` or a custom<br/>- Interrupt (`^C`)<br/>- Ask for help
+`Editor` | ✘ |
+`Input` | ✓ | - Answer<br/>- No answer<br/>- Suggestions with navigation (Arrow Up `↑`, Arrow Down `↓`, Tab `⇆`, Esc `⎋`, Enter `⏎`)<br/>- Interrupt (`^C`)<br/>- Ask for help
+`Multiline` | ✘ |
+`Multiselect` | ✘ |  
+`Password` | ✓ | - Answer (+ check for `*`)<br/>- No answer<br/>- Interrupt (`^C`)<br/>- Ask for help
+`Select` | ✘ |
 
 
 ### Expect

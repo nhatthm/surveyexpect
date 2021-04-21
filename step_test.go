@@ -6,6 +6,31 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestSteps_Append(t *testing.T) {
+	t.Parallel()
+
+	t.Run("still open", func(t *testing.T) {
+		t.Parallel()
+
+		s := steps()
+
+		assert.NotPanics(t, func() {
+			s.Append(tabAnswer())
+		})
+	})
+
+	t.Run("closed", func(t *testing.T) {
+		t.Parallel()
+
+		s := steps()
+		s.Close()
+
+		assert.Panics(t, func() {
+			s.Append(tabAnswer())
+		})
+	})
+}
+
 func TestSteps_String(t *testing.T) {
 	t.Parallel()
 

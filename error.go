@@ -11,6 +11,8 @@ var (
 	ErrNothingToDo = errors.New("nothing to do")
 	// ErrNotFinished indicates that the step is not finished.
 	ErrNotFinished = errors.New("step is not finished")
+	// ErrSequenceClosed indicates that the step is closed and do not take more action.
+	ErrSequenceClosed = errors.New("sequence is closed")
 )
 
 // IsIgnoredError checks whether the error is ignored.
@@ -30,4 +32,10 @@ func IsInterrupted(err error) bool {
 // IsNothingTodo checks if the error is ErrNothingToDo or not.
 func IsNothingTodo(err error) bool {
 	return errors.Is(err, ErrNothingToDo)
+}
+
+func mustNotClosed(closed bool) {
+	if closed {
+		panic(ErrSequenceClosed)
+	}
 }

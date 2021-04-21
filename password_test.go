@@ -172,7 +172,7 @@ func TestPasswordPrompt_NoHelpButStillExpect(t *testing.T) {
 
 	testingT := T()
 	s := surveyexpect.Expect(func(s *surveyexpect.Survey) {
-		s.WithTimeout(10 * time.Millisecond)
+		s.WithTimeout(50 * time.Millisecond)
 
 		s.ExpectPassword("Enter a password:").
 			ShowHelp("It is your secret")

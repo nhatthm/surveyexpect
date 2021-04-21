@@ -20,7 +20,7 @@ type PasswordPrompt struct {
 // ShowHelp sets help for the expectation.
 //
 //    Survey.ExpectPassword("Enter password:").
-//    	ShowHelp("Your shiny password").
+//    	ShowHelp("Your shiny password")
 func (p *PasswordPrompt) ShowHelp(help string, options ...string) {
 	p.lock()
 	defer p.unlock()
@@ -32,7 +32,7 @@ func (p *PasswordPrompt) ShowHelp(help string, options ...string) {
 // Interrupt marks the answer is interrupted.
 //
 //    Survey.ExpectPassword("Enter password:").
-//    	Interrupt().
+//    	Interrupt()
 func (p *PasswordPrompt) Interrupt() {
 	p.lock()
 	defer p.unlock()
@@ -44,7 +44,7 @@ func (p *PasswordPrompt) Interrupt() {
 // Answer sets the answer to the password prompt.
 //
 //    Survey.ExpectPassword("Enter password:").
-//    	Answer("hello world!").
+//    	Answer("hello world!")
 func (p *PasswordPrompt) Answer(answer string) *PasswordAnswer {
 	p.lock()
 	defer p.unlock()

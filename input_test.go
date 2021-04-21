@@ -172,7 +172,7 @@ func TestInputPrompt_NoHelpButStillExpect(t *testing.T) {
 
 	testingT := T()
 	s := surveyexpect.Expect(func(s *surveyexpect.Survey) {
-		s.WithTimeout(10 * time.Millisecond)
+		s.WithTimeout(50 * time.Millisecond)
 
 		s.ExpectInput("Enter a username:").
 			ShowHelp("It is your email")
@@ -269,4 +269,102 @@ func TestInputPrompt_SurveyInterrupted(t *testing.T) {
 			t.Log(testingT.LogString())
 		})
 	}
+}
+
+func TestInputPrompt_AskForSuggestions(t *testing.T) {
+	t.Parallel()
+
+	s := surveyexpect.Expect(func(s *surveyexpect.Survey) {
+		s.ExpectInput("Enter username:").
+			Type("joh").Tab().
+			ExpectSuggestions(
+				"> john.doe",
+				"john.lennon",
+				"john.legend",
+				"john.mayor",
+				"john.micheal",
+				"john.nguyen",
+				"john.pierre",
+			).
+			Tab().Tab().MoveUp().MoveUp().MoveDown().
+			ExpectSuggestions(
+				"john.doe",
+				"> john.lennon",
+				"john.legend",
+				"john.mayor",
+				"john.micheal",
+				"john.nguyen",
+				"john.pierre",
+			).
+			Esc().Tab().Type("n").Tab().MoveUp().
+			ExpectSuggestions(
+				"john.lennon",
+				"john.legend",
+				"john.mayor",
+				"john.micheal",
+				"john.nguyen",
+				"john.pierre",
+				"> johnny",
+			).
+			Enter()
+	})(t)
+
+	p := &survey.Input{
+		Message: "Enter username:",
+		Suggest: func(string) []string {
+			return []string{
+				"john.doe",
+				"john.lennon",
+				"john.legend",
+				"john.mayor",
+				"john.micheal",
+				"john.nguyen",
+				"john.pierre",
+				"johnny",
+			}
+		},
+	}
+
+	expectedAnswer := `johnny`
+
+	// Start the survey.
+	s.Start(func(stdio terminal.Stdio) {
+		var answer string
+		err := survey.AskOne(p, &answer, options.WithStdio(stdio))
+
+		assert.Equal(t, expectedAnswer, answer)
+		assert.NoError(t, err)
+	})
+}
+
+func TestInputPrompt_AskForSuggestionsButThereIsNone(t *testing.T) {
+	t.Parallel()
+
+	testingT := T()
+	s := surveyexpect.Expect(func(s *surveyexpect.Survey) {
+		s.WithTimeout(100 * time.Millisecond)
+		s.ExpectInput("Enter username:").
+			Type("john").Tab().
+			ExpectSuggestions(
+				"> john.doe",
+				"john.lennon",
+				"john.legend",
+				"john.mayor",
+				"john.micheal",
+				"john.nguyen",
+				"john.pierre",
+			).
+			Enter()
+	})(testingT)
+
+	p := &survey.Input{Message: "Enter username:"}
+
+	// Start the survey.
+	s.Start(func(stdio terminal.Stdio) {
+		var answer string
+		err := survey.AskOne(p, &answer, options.WithStdio(stdio))
+
+		assert.Empty(t, answer)
+		assert.NoError(t, err)
+	})
 }

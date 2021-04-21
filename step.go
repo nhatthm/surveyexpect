@@ -3,6 +3,7 @@ package surveyexpect
 import (
 	"errors"
 	"sync"
+	"time"
 
 	"github.com/AlecAivazis/survey/v2/terminal"
 )
@@ -18,7 +19,8 @@ type Step interface {
 
 // Steps is a chain of Step.
 type Steps struct {
-	steps []Step
+	steps  []Step
+	closed bool
 
 	mu sync.Mutex
 }
@@ -33,11 +35,21 @@ func (s *Steps) unlock() {
 	s.mu.Unlock()
 }
 
+// Close closes the steps.
+func (s *Steps) Close() {
+	s.lock()
+	defer s.unlock()
+
+	s.closed = true
+}
+
 // Append appends an expectation to the sequence.
 // nolint: unparam
 func (s *Steps) Append(more ...Step) *Steps {
 	s.lock()
 	defer s.unlock()
+
+	mustNotClosed(s.closed)
 
 	s.steps = append(s.steps, more...)
 
@@ -87,6 +99,8 @@ func (s *Steps) Do(c Console) error {
 				return err
 			}
 		}
+
+		<-time.After(ReactionTime)
 	}
 }
 
