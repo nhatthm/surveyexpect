@@ -104,7 +104,7 @@ func (s *Steps) Do(c Console) error {
 	}
 }
 
-// String represents the answer as a string.
+// String represents the steps as a string.
 func (s *Steps) String() string {
 	if s.HasNothingToDo() {
 		return ""
@@ -115,9 +115,12 @@ func (s *Steps) String() string {
 
 	var sb stringsBuilder
 
-	for _, step := range s.steps {
-		sb.WriteRune('\n').
-			WriteString(step.String())
+	for i, step := range s.steps {
+		if i > 0 {
+			sb.WriteString("\n\n")
+		}
+
+		sb.WriteString(step.String())
 	}
 
 	return sb.String()
@@ -158,5 +161,38 @@ func (s *Steps) ExpectationsWereMet() error {
 func steps(steps ...Step) *Steps {
 	return &Steps{
 		steps: steps,
+	}
+}
+
+// InlineSteps is for internal steps and they are part of an expectation.
+type InlineSteps struct {
+	*Steps
+}
+
+// String represents the answer as a string.
+func (s *InlineSteps) String() string {
+	if s.HasNothingToDo() {
+		return ""
+	}
+
+	s.lock()
+	defer s.unlock()
+
+	var sb stringsBuilder
+
+	for i, step := range s.steps {
+		if i > 0 {
+			sb.WriteRune('\n')
+		}
+
+		sb.WriteString(step.String())
+	}
+
+	return sb.String()
+}
+
+func inlineSteps(inlineSteps ...Step) *InlineSteps {
+	return &InlineSteps{
+		Steps: steps(inlineSteps...),
 	}
 }

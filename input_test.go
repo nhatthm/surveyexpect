@@ -355,6 +355,8 @@ func TestInputPrompt_AskForSuggestionsButThereIsNone(t *testing.T) {
 				"john.pierre",
 			).
 			Enter()
+
+		s.ExpectInput("Enter your idea:")
 	})(testingT)
 
 	p := &survey.Input{Message: "Enter username:"}
@@ -367,4 +369,25 @@ func TestInputPrompt_AskForSuggestionsButThereIsNone(t *testing.T) {
 		assert.Empty(t, answer)
 		assert.NoError(t, err)
 	})
+
+	expectedError := `there are remaining expectations that were not met:
+
+Expect : Input Prompt
+Message: "Enter username:"
+Expect a select list:
+> john.doe
+  john.lennon
+  john.legend
+  john.mayor
+  john.micheal
+  john.nguyen
+  john.pierre
+press ENTER
+
+Expect : Input Prompt
+Message: "Enter your idea:"
+Answer : <no answer>
+`
+
+	assert.EqualError(t, s.ExpectationsWereMet(), expectedError)
 }

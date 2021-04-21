@@ -211,7 +211,7 @@ func (s *Survey) ExpectationsWereMet() error {
 
 	var sb strings.Builder
 
-	sb.WriteString("there are remaining expectations that were not met:\n")
+	sb.WriteString("there are remaining expectations that were not met:\n\n")
 	sb.WriteString(err.Error())
 
 	// nolint:goerr113

@@ -49,7 +49,7 @@ func TestSteps_String(t *testing.T) {
 
 		s.Append(moveDownAnswer())
 
-		expectedResult := "\npress MOVE DOWN"
+		expectedResult := "press MOVE DOWN"
 
 		assert.Equal(t, expectedResult, s.String())
 	})
@@ -63,7 +63,7 @@ func TestSteps_String(t *testing.T) {
 
 		s.Append(moveDownAnswer(), enterAnswer(), escAnswer(), tabAnswer(), typeAnswer("hello"))
 
-		expectedResult := "\npress MOVE UP\npress MOVE DOWN\npress ENTER\npress ESC\npress TAB\ntype \"hello\""
+		expectedResult := "press MOVE UP\n\npress MOVE DOWN\n\npress ENTER\n\npress ESC\n\npress TAB\n\ntype \"hello\""
 
 		assert.Equal(t, expectedResult, s.String())
 	})
@@ -75,7 +75,7 @@ func TestSteps_String(t *testing.T) {
 		s.Reset()
 		s.Append(moveDownAnswer())
 
-		expectedResult := "\npress MOVE DOWN"
+		expectedResult := "press MOVE DOWN"
 
 		assert.Equal(t, expectedResult, s.String())
 	})

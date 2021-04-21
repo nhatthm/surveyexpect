@@ -112,7 +112,7 @@ func (p *InputPrompt) String() string {
 	sb.WriteLabelLinef("Expect", "Input Prompt").
 		WriteLabelLinef("Message", "%q", p.message)
 
-	if steps, ok := p.answer.(*Steps); ok {
+	if steps, ok := p.answer.(*InputSuggestionSteps); ok {
 		sb.WriteString(steps.String())
 	} else {
 		sb.WriteLabelLinef("Answer", p.answer.String())
@@ -215,14 +215,7 @@ func newInputAnswer(parent *InputPrompt, answer string) *InputAnswer {
 // InputSuggestionSteps is a sequence of steps when user is in suggestion mode.
 type InputSuggestionSteps struct {
 	parent *InputPrompt
-	steps  *Steps
-}
-
-func newInputSuggestionSteps(parent *InputPrompt, initial Step) *InputSuggestionSteps {
-	return &InputSuggestionSteps{
-		parent: parent,
-		steps:  steps(initial),
-	}
+	steps  *InlineSteps
 }
 
 func (a *InputSuggestionSteps) append(s Step) *InputSuggestionSteps {
@@ -266,7 +259,7 @@ func (a *InputSuggestionSteps) Type(s string) *InputSuggestionSteps {
 
 // ExpectSuggestions expects a list of suggestions.
 func (a *InputSuggestionSteps) ExpectSuggestions(suggestions ...string) *InputSuggestionSteps {
-	return a.append(expectStrings(suggestions...))
+	return a.append(expectSelect(suggestions...))
 }
 
 // Do runs the step.
@@ -276,5 +269,12 @@ func (a *InputSuggestionSteps) Do(c Console) error {
 
 // String represents the answer as a string.
 func (a *InputSuggestionSteps) String() string {
-	return "TODO"
+	return a.steps.String()
+}
+
+func newInputSuggestionSteps(parent *InputPrompt, initial Step) *InputSuggestionSteps {
+	return &InputSuggestionSteps{
+		parent: parent,
+		steps:  inlineSteps(initial),
+	}
 }
