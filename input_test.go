@@ -356,7 +356,7 @@ func TestInputPrompt_AskForSuggestionsButThereIsNone(t *testing.T) {
 			).
 			Enter()
 
-		s.ExpectInput("Enter your idea:")
+		s.ExpectInput("Enter your idea:").Tab()
 	})(testingT)
 
 	p := &survey.Input{Message: "Enter username:"}
@@ -386,8 +386,7 @@ press ENTER
 
 Expect : Input Prompt
 Message: "Enter your idea:"
-Answer : <no answer>
-`
+press TAB`
 
 	assert.EqualError(t, s.ExpectationsWereMet(), expectedError)
 }
