@@ -128,11 +128,11 @@ func enterAnswer() *ActionAnswer {
 }
 
 func moveUpAnswer() *ActionAnswer {
-	return actionAnswer(terminal.KeyEnter, "MOVE UP")
+	return actionAnswer(terminal.KeyArrowUp, "MOVE UP")
 }
 
 func moveDownAnswer() *ActionAnswer {
-	return actionAnswer(terminal.KeyEnter, "MOVE DOWN")
+	return actionAnswer(terminal.KeyArrowDown, "MOVE DOWN")
 }
 
 // TypeAnswer types an answer.
