@@ -22,11 +22,11 @@ type PasswordPrompt struct {
 //
 //    Survey.ExpectPassword("Enter password:").
 //    	ShowHelp("Your shiny password").
-func (p *PasswordPrompt) ShowHelp(help string) {
+func (p *PasswordPrompt) ShowHelp(help string, options ...string) {
 	p.lock()
 	defer p.unlock()
 
-	p.answer = helpAnswer(help)
+	p.answer = helpAnswer(help, options...)
 	p.timesLocked(1)
 }
 

@@ -22,11 +22,11 @@ type ConfirmPrompt struct {
 //
 //    Survey.ExpectConfirm("Are you sure to delete this file?").
 //    	ShowHelp("The file will be permanently deleted").
-func (c *ConfirmPrompt) ShowHelp(help string) {
+func (c *ConfirmPrompt) ShowHelp(help string, options ...string) {
 	c.lock()
 	defer c.unlock()
 
-	c.answer = helpAnswer(help)
+	c.answer = helpAnswer(help, options...)
 }
 
 // Interrupt marks the answer is interrupted.

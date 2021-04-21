@@ -58,12 +58,13 @@ func interruptAnswer() *InterruptAnswer {
 // HelpAnswer sends a ? to show the help.
 type HelpAnswer struct {
 	help string
+	icon string
 }
 
 // Do runs the step.
 // nolint: errcheck,gosec
 func (a *HelpAnswer) Do(c Console) error {
-	c.SendLine("?")
+	c.SendLine(a.icon)
 
 	if _, err := c.ExpectString(a.help); err != nil {
 		return err
@@ -74,11 +75,18 @@ func (a *HelpAnswer) Do(c Console) error {
 
 // String represents the answer as a string.
 func (a *HelpAnswer) String() string {
-	return "?"
+	return a.icon
 }
 
-func helpAnswer(help string) *HelpAnswer {
-	return &HelpAnswer{help: help}
+func helpAnswer(help string, options ...string) *HelpAnswer {
+	if len(options) == 0 {
+		options = append(options, "?")
+	}
+
+	return &HelpAnswer{
+		help: help,
+		icon: options[0],
+	}
 }
 
 // ActionAnswer sends an action.
