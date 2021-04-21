@@ -64,6 +64,18 @@ func (s *Survey) ExpectConfirm(message string) *ConfirmPrompt {
 	return e
 }
 
+// ExpectInput expects an InputPrompt.
+//
+//    Survey.ExpectInput("Enter password:").
+//    	Answer("hello world!")
+func (s *Survey) ExpectInput(message string) *InputPrompt {
+	e := newInput(s, message).Once()
+
+	s.addStep(e)
+
+	return e
+}
+
 // ExpectPassword expects a PasswordPrompt.
 //
 //    Survey.ExpectPassword("Enter password:").
@@ -78,7 +90,7 @@ func (s *Survey) ExpectPassword(message string) *PasswordPrompt {
 
 // Expect runs an expectation against a given console.
 func (s *Survey) Expect(c Console) error {
-	if err := s.steps.Do(c); !IsIgnoredError(err) {
+	if err := s.steps.DoFirst(c); !IsIgnoredError(err) {
 		return err
 	}
 

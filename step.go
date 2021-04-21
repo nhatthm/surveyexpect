@@ -44,8 +44,8 @@ func (s *Steps) Append(more ...Step) *Steps {
 	return s
 }
 
-// Do runs the step.
-func (s *Steps) Do(c Console) error {
+// DoFirst runs the first step.
+func (s *Steps) DoFirst(c Console) error {
 	if s.HasNothingToDo() {
 		return ErrNothingToDo
 	}
@@ -75,6 +75,21 @@ func (s *Steps) Do(c Console) error {
 	return nil
 }
 
+// Do runs all the steps.
+func (s *Steps) Do(c Console) error {
+	for {
+		if err := s.DoFirst(c); err != nil {
+			if IsNothingTodo(err) {
+				return nil
+			}
+
+			if !IsInterrupted(err) {
+				return err
+			}
+		}
+	}
+}
+
 // String represents the answer as a string.
 func (s *Steps) String() string {
 	if s.HasNothingToDo() {
@@ -87,8 +102,8 @@ func (s *Steps) String() string {
 	var sb stringsBuilder
 
 	for _, step := range s.steps {
-		_, _ = sb.WriteRune('\n')
-		_, _ = sb.WriteString(step.String())
+		sb.WriteRune('\n').
+			WriteString(step.String())
 	}
 
 	return sb.String()

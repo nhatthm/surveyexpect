@@ -12,7 +12,7 @@ import (
 	"github.com/nhatthm/surveyexpect/options"
 )
 
-func TestPasswordPrompt(t *testing.T) {
+func TestInputPrompt(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
@@ -28,110 +28,110 @@ func TestPasswordPrompt(t *testing.T) {
 		{
 			scenario: "no answer sends an empty line",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectPassword("Enter an empty password:")
+				s.ExpectInput("Enter an empty username:")
 			}),
-			message: "Enter an empty password:",
+			message: "Enter an empty username:",
 		},
 		{
 			scenario: "empty answer",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectPassword("Enter an empty password:").
+				s.ExpectInput("Enter an empty username:").
 					Answer("")
 			}),
-			message: "Enter an empty password:",
+			message: "Enter an empty username:",
 		},
 		{
-			scenario: "password without help",
+			scenario: "username without help",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectPassword("Enter a password:").
+				s.ExpectInput("Enter a username:").
 					Answer("secret")
 			}),
-			message:        "Enter a password:",
+			message:        "Enter a username:",
 			expectedAnswer: "secret",
 		},
 		{
-			scenario: "password with visible help and do not ask for it",
+			scenario: "username with visible help and do not ask for it",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectPassword("Enter a password: [? for help]").
+				s.ExpectInput("Enter a username: [? for help]").
 					Answer("secret")
 			}),
-			message:        "Enter a password:",
-			help:           "It is your secret",
+			message:        "Enter a username:",
+			help:           "It is your email",
 			showHelp:       true,
 			expectedAnswer: "secret",
 		},
 		{
-			scenario: "password with visible help and ask for it",
+			scenario: "username with visible help and ask for it",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectPassword("Enter a password: [? for help]").
-					ShowHelp("It is your secret")
+				s.ExpectInput("Enter a username: [? for help]").
+					ShowHelp("It is your email")
 
-				s.ExpectPassword("Enter a password:").
+				s.ExpectInput("Enter a username:").
 					Answer("secret")
 			}),
-			message:        "Enter a password:",
-			help:           "It is your secret",
+			message:        "Enter a username:",
+			help:           "It is your email",
 			showHelp:       true,
 			expectedAnswer: "secret",
 		},
 		{
-			scenario: "password with invisible help and do not ask for it",
+			scenario: "username with invisible help and do not ask for it",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectPassword("Enter a password:").
+				s.ExpectInput("Enter a username:").
 					Answer("secret")
 			}),
-			message:        "Enter a password:",
-			help:           "It is your secret",
+			message:        "Enter a username:",
+			help:           "It is your email",
 			expectedAnswer: "secret",
 		},
 		{
-			scenario: "password with invisible help and ask for it",
+			scenario: "username with invisible help and ask for it",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectPassword("Enter a password:").
-					ShowHelp("It is your secret")
+				s.ExpectInput("Enter a username:").
+					ShowHelp("It is your email")
 
-				s.ExpectPassword("Enter a password:").
+				s.ExpectInput("Enter a username:").
 					Answer("secret")
 			}),
-			message:        "Enter a password:",
-			help:           "It is your secret",
+			message:        "Enter a username:",
+			help:           "It is your email",
 			expectedAnswer: "secret",
 		},
 		{
 			scenario: "input is interrupted",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectPassword("Enter a password:").
+				s.ExpectInput("Enter a username:").
 					Times(10). // Times will be discarded due to the interruption.
 					Interrupt()
 			}),
-			message:       "Enter a password:",
+			message:       "Enter a username:",
 			expectedError: "interrupt",
 		},
 		{
 			scenario: "input is invalid",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectPassword("Enter a password:").
+				s.ExpectInput("Enter a username:").
 					Answer("\033X").
 					Interrupted()
 			}),
-			message:       "Enter a password:",
+			message:       "Enter a username:",
 			expectedError: `Unexpected Escape Sequence: ['\x1b' 'X']`,
 		},
 		{
 			scenario: "answer is required",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				// Be asked for 5 times without giving up the password.
-				s.ExpectPassword("Enter a password:").
+				// Be asked for 5 times without giving up the username.
+				s.ExpectInput("Enter a username:").
 					Times(5)
 
-				// Finally, input the password.
-				s.ExpectPassword("Enter a password:").
+				// Finally, input the username.
+				s.ExpectInput("Enter a username:").
 					Answer("secret")
 			}),
 			options: []survey.AskOpt{
 				survey.WithValidator(survey.Required),
 			},
-			message:        "Enter a password:",
+			message:        "Enter a username:",
 			expectedAnswer: "secret",
 		},
 	}
@@ -143,8 +143,8 @@ func TestPasswordPrompt(t *testing.T) {
 
 			// Prepare the survey.
 			s := tc.expectSurvey(t)
-			p := &survey.PasswordTemplateData{
-				Password: survey.Password{Message: tc.message, Help: tc.help},
+			p := &survey.InputTemplateData{
+				Input:    survey.Input{Message: tc.message, Help: tc.help},
 				ShowHelp: tc.showHelp,
 			}
 
@@ -167,21 +167,21 @@ func TestPasswordPrompt(t *testing.T) {
 	}
 }
 
-func TestPasswordPrompt_NoHelpButStillExpect(t *testing.T) {
+func TestInputPrompt_NoHelpButStillExpect(t *testing.T) {
 	t.Parallel()
 
 	testingT := T()
 	s := surveyexpect.Expect(func(s *surveyexpect.Survey) {
 		s.WithTimeout(10 * time.Millisecond)
 
-		s.ExpectPassword("Enter a password:").
-			ShowHelp("It is your secret")
+		s.ExpectInput("Enter a username:").
+			ShowHelp("It is your email")
 	})(testingT)
 
 	expectedAnswer := "?"
-	expectedError := "there are remaining expectations that were not met:\n\nExpect : Password Prompt\nMessage: \"Enter a password:\"\nAnswer : ?\n"
+	expectedError := "there are remaining expectations that were not met:\n\nExpect : Input Prompt\nMessage: \"Enter a username:\"\nAnswer : ?\n"
 
-	p := &survey.Password{Message: "Enter a password:"}
+	p := &survey.Input{Message: "Enter a username:"}
 
 	// Start the survey.
 	s.Start(func(stdio terminal.Stdio) {
@@ -197,7 +197,7 @@ func TestPasswordPrompt_NoHelpButStillExpect(t *testing.T) {
 	t.Log(testingT.LogString())
 }
 
-func TestPasswordPrompt_SurveyInterrupted(t *testing.T) {
+func TestInputPrompt_SurveyInterrupted(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
@@ -208,14 +208,14 @@ func TestPasswordPrompt_SurveyInterrupted(t *testing.T) {
 		{
 			scenario: "interrupt",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectPassword("Enter your username:").Interrupt()
+				s.ExpectInput("Enter your username:").Interrupt()
 			}),
 			expectedError: "interrupt",
 		},
 		{
 			scenario: "invalid input",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectPassword("Enter your username:").
+				s.ExpectInput("Enter your username:").
 					Answer("\033X").
 					Interrupted()
 			}),
@@ -234,11 +234,11 @@ func TestPasswordPrompt_SurveyInterrupted(t *testing.T) {
 			questions := []*survey.Question{
 				{
 					Name:   "username",
-					Prompt: &survey.Password{Message: "Enter your username:"},
+					Prompt: &survey.Input{Message: "Enter your username:"},
 				},
 				{
 					Name:   "password",
-					Prompt: &survey.Password{Message: "Enter your password:"},
+					Prompt: &survey.Input{Message: "Enter your password:"},
 				},
 			}
 
