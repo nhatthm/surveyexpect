@@ -194,7 +194,7 @@ func (s *Survey) Start(fn func(stdio terminal.Stdio)) {
 	// Setup a console.
 	buf := new(Buffer)
 	console, state, err := vt10x.NewVT10XConsole(expect.WithStdout(buf))
-	require.Nil(s.test, err)
+	require.NoError(s.test, err)
 
 	// Run the survey in background and close console when it is done.
 	askDone := s.ask(console, fn)
