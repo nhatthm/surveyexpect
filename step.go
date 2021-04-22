@@ -196,3 +196,35 @@ func inlineSteps(inlineSteps ...Step) *InlineSteps {
 		Steps: steps(inlineSteps...),
 	}
 }
+
+func totalTimes(times ...int) int {
+	cnt := len(times)
+
+	switch cnt {
+	case 0:
+		return 1
+
+	case 1:
+		return times[0]
+
+	default:
+		var result int
+
+		for i := 0; i < cnt; i++ {
+			result += times[i]
+		}
+
+		return result
+	}
+}
+
+func repeatStep(s Step, times ...int) []Step {
+	cnt := totalTimes(times...)
+	result := make([]Step, 0, cnt)
+
+	for i := 0; i < cnt; i++ {
+		result = append(result, s)
+	}
+
+	return result
+}

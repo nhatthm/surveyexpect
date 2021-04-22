@@ -80,3 +80,52 @@ func TestSteps_String(t *testing.T) {
 		assert.Equal(t, expectedResult, s.String())
 	})
 }
+
+func TestTotalTimes(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		scenario string
+		times    []int
+		expected int
+	}{
+		{
+			scenario: "nil",
+			times:    nil,
+			expected: 1,
+		},
+		{
+			scenario: "empty",
+			times:    []int{},
+			expected: 1,
+		},
+		{
+			scenario: "one element",
+			times:    []int{3},
+			expected: 3,
+		},
+		{
+			scenario: "multiple elements",
+			times:    []int{1, 2, 3},
+			expected: 6,
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.scenario, func(t *testing.T) {
+			t.Parallel()
+
+			assert.Equal(t, tc.expected, totalTimes(tc.times...))
+		})
+	}
+}
+
+func TestRepeatSteps(t *testing.T) {
+	t.Parallel()
+
+	actual := repeatStep(pressEnter(), 1, 2)
+	expected := []Step{pressEnter(), pressEnter(), pressEnter()}
+
+	assert.Equal(t, expected, actual)
+}

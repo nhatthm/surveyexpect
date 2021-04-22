@@ -286,7 +286,7 @@ func TestInputPrompt_AskForSuggestions(t *testing.T) {
 				"john.nguyen",
 				"john.pierre",
 			).
-			Tab().Tab().MoveUp().MoveUp().MoveDown().
+			Tab(2).MoveUp(2).MoveDown().
 			ExpectSuggestions(
 				"john.doe",
 				"> john.lennon",
@@ -296,7 +296,7 @@ func TestInputPrompt_AskForSuggestions(t *testing.T) {
 				"john.nguyen",
 				"john.pierre",
 			).
-			Esc().Tab().Type("n").Tab().MoveUp().
+			Esc().Tab().Delete(3).Type("n").Tab().MoveUp().
 			ExpectSuggestions(
 				"john.lennon",
 				"john.legend",

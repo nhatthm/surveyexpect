@@ -10,11 +10,11 @@ type SelectPrompt struct {
 	steps   *InlineSteps
 }
 
-func (p *SelectPrompt) append(s Step) *SelectPrompt {
+func (p *SelectPrompt) append(steps ...Step) *SelectPrompt {
 	p.lock()
 	defer p.unlock()
 
-	p.steps.Append(s)
+	p.steps.Append(steps...)
 
 	return p
 }
@@ -35,21 +35,13 @@ func (p *SelectPrompt) Type(s string) *SelectPrompt {
 	return p.append(typeAnswer(s))
 }
 
-// Tab sends the TAB key the indicated times. Default is 1.
+// Tab sends the TAB key the indicated times. Default is 1 when omitted.
 //
 //    Survey.ExpectSelect("Select a language:").
 //    	Type("Eng").
 //		Tab()
 func (p *SelectPrompt) Tab(times ...int) *SelectPrompt {
-	if len(times) == 0 {
-		times = append(times, 1)
-	}
-
-	for i := 0; i < times[0]; i++ {
-		p.append(pressTab())
-	}
-
-	return p
+	return p.append(repeatStep(pressTab(), times...)...)
 }
 
 // Interrupt sends ^C and ends the sequence.
@@ -71,55 +63,31 @@ func (p *SelectPrompt) Enter() {
 	p.steps.Close()
 }
 
-// Delete sends the DELETE key the indicated times. Default is 1.
+// Delete sends the DELETE key the indicated times. Default is 1 when omitted.
 //
 //    Survey.ExpectSelect("Select a language:").
 //    	Type("Eng").
 //		Delete(3)
 func (p *SelectPrompt) Delete(times ...int) *SelectPrompt {
-	if len(times) == 0 {
-		times = append(times, 1)
-	}
-
-	for i := 0; i < times[0]; i++ {
-		p.append(pressDelete())
-	}
-
-	return p
+	return p.append(repeatStep(pressDelete(), times...)...)
 }
 
-// MoveUp sends the ARROW UP key the indicated times. Default is 1.
+// MoveUp sends the ARROW UP key the indicated times. Default is 1 when omitted.
 //
 //    Survey.ExpectSelect("Select a language:").
 //    	Type("Eng").
 //		MoveUp()
 func (p *SelectPrompt) MoveUp(times ...int) *SelectPrompt {
-	if len(times) == 0 {
-		times = append(times, 1)
-	}
-
-	for i := 0; i < times[0]; i++ {
-		p.append(pressArrowUp())
-	}
-
-	return p
+	return p.append(repeatStep(pressArrowUp(), times...)...)
 }
 
-// MoveDown sends the ARROW DOWN key the indicated times. Default is 1.
+// MoveDown sends the ARROW DOWN key the indicated times. Default is 1 when omitted.
 //
 //    Survey.ExpectSelect("Select a language:").
 //    	Type("Eng").
 //		MoveDown()
 func (p *SelectPrompt) MoveDown(times ...int) *SelectPrompt {
-	if len(times) == 0 {
-		times = append(times, 1)
-	}
-
-	for i := 0; i < times[0]; i++ {
-		p.append(pressArrowDown())
-	}
-
-	return p
+	return p.append(repeatStep(pressArrowDown(), times...)...)
 }
 
 // ExpectOptions expects a list of options.
@@ -133,8 +101,7 @@ func (p *SelectPrompt) ExpectOptions(options ...string) *SelectPrompt {
 
 // Do runs the step.
 func (p *SelectPrompt) Do(c Console) error {
-	_, err := c.ExpectString(p.message)
-	if err != nil {
+	if _, err := c.ExpectString(p.message); err != nil {
 		return err
 	}
 
