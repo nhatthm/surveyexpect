@@ -81,6 +81,56 @@ func TestSteps_String(t *testing.T) {
 	})
 }
 
+func TestInlineSteps_String(t *testing.T) {
+	t.Parallel()
+
+	t.Run("empty steps", func(t *testing.T) {
+		t.Parallel()
+
+		s := inlineSteps()
+
+		assert.Empty(t, s.String())
+	})
+
+	t.Run("append empty steps", func(t *testing.T) {
+		t.Parallel()
+
+		s := inlineSteps()
+
+		s.Append(pressArrowDown())
+
+		expectedResult := "press ARROW DOWN"
+
+		assert.Equal(t, expectedResult, s.String())
+	})
+
+	t.Run("append existing steps", func(t *testing.T) {
+		t.Parallel()
+
+		s := inlineSteps(
+			pressArrowUp(),
+		)
+
+		s.Append(pressArrowDown(), pressEnter(), pressEsc(), pressTab(), typeAnswer("hello"))
+
+		expectedResult := "press ARROW UP\npress ARROW DOWN\npress ENTER\npress ESC\npress TAB\ntype \"hello\""
+
+		assert.Equal(t, expectedResult, s.String())
+	})
+
+	t.Run("reset and re-append", func(t *testing.T) {
+		t.Parallel()
+
+		s := inlineSteps(pressArrowUp())
+		s.Reset()
+		s.Append(pressArrowDown())
+
+		expectedResult := "press ARROW DOWN"
+
+		assert.Equal(t, expectedResult, s.String())
+	})
+}
+
 func TestTotalTimes(t *testing.T) {
 	t.Parallel()
 
