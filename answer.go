@@ -89,50 +89,92 @@ func helpAnswer(help string, options ...string) *HelpAnswer {
 	}
 }
 
-// ActionAnswer sends an action.
-type ActionAnswer struct {
+// Action sends an action.
+type Action struct {
 	code   int32
 	action string
 }
 
 // Do runs the step.
 // nolint: errcheck,gosec
-func (a *ActionAnswer) Do(c Console) error {
+func (a *Action) Do(c Console) error {
 	c.Send(string(a.code))
 
 	return nil
 }
 
 // String represents the answer as a string.
-func (a *ActionAnswer) String() string {
+func (a *Action) String() string {
 	return fmt.Sprintf("press %s", a.action)
 }
 
-func actionAnswer(code int32, action string) *ActionAnswer {
-	return &ActionAnswer{
+func action(code int32, action string) *Action {
+	return &Action{
 		code:   code,
 		action: action,
 	}
 }
 
-func tabAnswer() *ActionAnswer {
-	return actionAnswer(terminal.KeyTab, "TAB")
+func pressTab() *Action {
+	return action(terminal.KeyTab, "TAB")
 }
 
-func escAnswer() *ActionAnswer {
-	return actionAnswer(terminal.KeyEscape, "ESC")
+func pressEsc() *Action {
+	return action(terminal.KeyEscape, "ESC")
 }
 
-func enterAnswer() *ActionAnswer {
-	return actionAnswer(terminal.KeyEnter, "ENTER")
+func pressEnter() *Action {
+	return action(terminal.KeyEnter, "ENTER")
 }
 
-func moveUpAnswer() *ActionAnswer {
-	return actionAnswer(terminal.KeyArrowUp, "MOVE UP")
+func pressArrowUp() *Action {
+	return action(terminal.KeyArrowUp, "ARROW UP")
 }
 
-func moveDownAnswer() *ActionAnswer {
-	return actionAnswer(terminal.KeyArrowDown, "MOVE DOWN")
+func pressArrowDown() *Action {
+	return action(terminal.KeyArrowDown, "ARROW DOWN")
+}
+
+func pressInterrupt() *Action {
+	return action(terminal.KeyInterrupt, "INTERRUPT")
+}
+
+func pressDelete() *Action {
+	return action(terminal.KeyDelete, "DELETE")
+}
+
+// HelpAction sends a ? to show the help.
+type HelpAction struct {
+	help string
+	icon string
+}
+
+// Do runs the step.
+// nolint: errcheck,gosec
+func (a *HelpAction) Do(c Console) error {
+	c.Send(a.icon)
+
+	if _, err := c.ExpectString(a.help); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// String represents the answer as a string.
+func (a *HelpAction) String() string {
+	return fmt.Sprintf("press %q", a.icon)
+}
+
+func pressHelp(help string, options ...string) *HelpAction {
+	if len(options) == 0 {
+		options = append(options, "?")
+	}
+
+	return &HelpAction{
+		help: help,
+		icon: options[0],
+	}
 }
 
 // TypeAnswer types an answer.

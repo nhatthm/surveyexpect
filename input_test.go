@@ -41,7 +41,7 @@ func TestInputPrompt(t *testing.T) {
 			message: "Enter an empty username:",
 		},
 		{
-			scenario: "username without help",
+			scenario: "answer without help",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectInput("Enter a username:").
 					Answer("secret")
@@ -50,7 +50,7 @@ func TestInputPrompt(t *testing.T) {
 			expectedAnswer: "secret",
 		},
 		{
-			scenario: "username with visible help and do not ask for it",
+			scenario: "answer with visible help and do not ask for it",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectInput("Enter a username: [? for help]").
 					Answer("secret")
@@ -61,7 +61,7 @@ func TestInputPrompt(t *testing.T) {
 			expectedAnswer: "secret",
 		},
 		{
-			scenario: "username with visible help and ask for it",
+			scenario: "answer with visible help and ask for it",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectInput("Enter a username: [? for help]").
 					ShowHelp("It is your email")
@@ -75,7 +75,7 @@ func TestInputPrompt(t *testing.T) {
 			expectedAnswer: "secret",
 		},
 		{
-			scenario: "username with invisible help and do not ask for it",
+			scenario: "answer with invisible help and do not ask for it",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectInput("Enter a username:").
 					Answer("secret")
@@ -85,7 +85,7 @@ func TestInputPrompt(t *testing.T) {
 			expectedAnswer: "secret",
 		},
 		{
-			scenario: "username with invisible help and ask for it",
+			scenario: "answer with invisible help and ask for it",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectInput("Enter a username:").
 					ShowHelp("It is your email")
@@ -286,7 +286,7 @@ func TestInputPrompt_AskForSuggestions(t *testing.T) {
 				"john.nguyen",
 				"john.pierre",
 			).
-			Tab().Tab().MoveUp().MoveUp().MoveDown().
+			Tab(2).MoveUp(2).MoveDown().
 			ExpectSuggestions(
 				"john.doe",
 				"> john.lennon",
@@ -296,7 +296,7 @@ func TestInputPrompt_AskForSuggestions(t *testing.T) {
 				"john.nguyen",
 				"john.pierre",
 			).
-			Esc().Tab().Type("n").Tab().MoveUp().
+			Esc().Tab().Delete(3).Type("n").Tab().MoveUp().
 			ExpectSuggestions(
 				"john.lennon",
 				"john.legend",
@@ -334,6 +334,50 @@ func TestInputPrompt_AskForSuggestions(t *testing.T) {
 
 		assert.Equal(t, expectedAnswer, answer)
 		assert.NoError(t, err)
+	})
+}
+
+func TestInputPrompt_AskForSuggestionsThenInterrupt(t *testing.T) {
+	t.Parallel()
+
+	s := surveyexpect.Expect(func(s *surveyexpect.Survey) {
+		s.ExpectInput("Enter username:").
+			Tab().
+			ExpectSuggestions(
+				"> john.doe",
+				"john.lennon",
+				"john.legend",
+				"john.mayor",
+				"john.micheal",
+				"john.nguyen",
+				"john.pierre",
+			).
+			Interrupt()
+	})(t)
+
+	p := &survey.Input{
+		Message: "Enter username:",
+		Suggest: func(string) []string {
+			return []string{
+				"john.doe",
+				"john.lennon",
+				"john.legend",
+				"john.mayor",
+				"john.micheal",
+				"john.nguyen",
+				"john.pierre",
+				"johnny",
+			}
+		},
+	}
+
+	// Start the survey.
+	s.Start(func(stdio terminal.Stdio) {
+		var answer string
+		err := survey.AskOne(p, &answer, options.WithStdio(stdio))
+
+		assert.Empty(t, answer)
+		assert.Error(t, terminal.InterruptErr, err)
 	})
 }
 

@@ -5,7 +5,7 @@ import (
 	"regexp"
 )
 
-var indicatorRegex = regexp.MustCompile(`^([^ ]*\s+)(.*)`)
+var indicatorRegex = regexp.MustCompile(`^([^ ]\s+)(.*)`)
 
 // SelectExpect expects strings from console.
 type SelectExpect []string

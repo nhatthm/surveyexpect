@@ -88,14 +88,13 @@ func (c *ConfirmPrompt) Answer(answer string) *ConfirmAnswer {
 
 // Do runs the step.
 func (c *ConfirmPrompt) Do(console Console) error {
-	_, err := console.ExpectString(c.message)
-	if err != nil {
+	if _, err := console.ExpectString(c.message); err != nil {
 		return err
 	}
 
 	_ = waitForCursorTwice(console) // nolint: errcheck
 
-	err = c.answer.Do(console)
+	err := c.answer.Do(console)
 	if err != nil && !IsInterrupted(err) {
 		return err
 	}
@@ -156,8 +155,7 @@ func (a *ConfirmAnswer) Do(c Console) error {
 	c.SendLine(a.answer)
 
 	if a.feedback != "" {
-		_, err := c.ExpectString(a.feedback)
-		if err != nil {
+		if _, err := c.ExpectString(a.feedback); err != nil {
 			return err
 		}
 	}

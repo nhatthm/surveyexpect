@@ -88,6 +88,18 @@ func (s *Survey) ExpectPassword(message string) *PasswordPrompt {
 	return e
 }
 
+// ExpectSelect expects a SelectPrompt.
+//
+//    Survey.ExpectSelect("Enter password:").
+//    	Enter()
+func (s *Survey) ExpectSelect(message string) *SelectPrompt {
+	e := newSelect(s, message)
+
+	s.addStep(e)
+
+	return e
+}
+
 // Expect runs an expectation against a given console.
 func (s *Survey) Expect(c Console) error {
 	if err := s.steps.DoFirst(c); !IsIgnoredError(err) {
@@ -182,7 +194,7 @@ func (s *Survey) Start(fn func(stdio terminal.Stdio)) {
 	// Setup a console.
 	buf := new(Buffer)
 	console, state, err := vt10x.NewVT10XConsole(expect.WithStdout(buf))
-	require.Nil(s.test, err)
+	require.NoError(s.test, err)
 
 	// Run the survey in background and close console when it is done.
 	askDone := s.ask(console, fn)

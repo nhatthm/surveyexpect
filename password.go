@@ -57,14 +57,13 @@ func (p *PasswordPrompt) Answer(answer string) *PasswordAnswer {
 
 // Do runs the step.
 func (p *PasswordPrompt) Do(c Console) error {
-	_, err := c.ExpectString(p.message)
-	if err != nil {
+	if _, err := c.ExpectString(p.message); err != nil {
 		return err
 	}
 
 	_ = waitForCursorTwice(c) // nolint: errcheck
 
-	err = p.answer.Do(c)
+	err := p.answer.Do(c)
 	if err != nil && !IsInterrupted(err) {
 		return err
 	}
@@ -148,8 +147,7 @@ func (a *PasswordAnswer) Do(c Console) error {
 	c.Send(a.answer)
 
 	// Expect asterisks.
-	_, err := c.ExpectString(strings.Repeat("*", len(a.answer)))
-	if err != nil {
+	if _, err := c.ExpectString(strings.Repeat("*", len(a.answer))); err != nil {
 		return err
 	}
 

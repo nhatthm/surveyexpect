@@ -15,7 +15,7 @@ func (b *stringsBuilder) WriteRune(r rune) *stringsBuilder {
 	return b
 }
 
-func (b *stringsBuilder) WriteString(s string) *stringsBuilder { // nolint: unparam
+func (b *stringsBuilder) WriteString(s string) *stringsBuilder {
 	_, _ = b.Builder.WriteString(s)
 
 	return b
