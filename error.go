@@ -11,7 +11,7 @@ var (
 	ErrNothingToDo = errors.New("nothing to do")
 	// ErrNotFinished indicates that the step is not finished.
 	ErrNotFinished = errors.New("step is not finished")
-	// ErrSequenceClosed indicates that the step is closed and do not take more action.
+	// ErrSequenceClosed indicates that the step is closed and does not take more action.
 	ErrSequenceClosed = errors.New("sequence is closed")
 )
 
