@@ -3,7 +3,7 @@ module github.com/nhatthm/surveyexpect
 go 1.16
 
 require (
-	github.com/AlecAivazis/survey/v2 v2.2.9
+	github.com/AlecAivazis/survey/v2 v2.2.12
 	github.com/Netflix/go-expect v0.0.0-20201125194554-85d881c3777e
 	github.com/creack/pty v1.1.11 // indirect
 	github.com/hinshun/vt10x v0.0.0-20180809195222-d55458df857c
