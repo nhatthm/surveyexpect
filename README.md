@@ -1,5 +1,6 @@
 # Expects for `AlecAivazis/survey`
 
+[![GitHub Releases](https://img.shields.io/github/v/release/nhatthm/surveyexpect)](https://github.com/nhatthm/surveyexpect/releases/latest)
 [![Build Status](https://github.com/nhatthm/surveyexpect/actions/workflows/test.yaml/badge.svg)](https://github.com/nhatthm/surveyexpect/actions/workflows/test.yaml)
 [![codecov](https://codecov.io/gh/nhatthm/surveyexpect/branch/master/graph/badge.svg?token=eTdAgDE2vR)](https://codecov.io/gh/nhatthm/surveyexpect)
 [![Go Report Card](https://goreportcard.com/badge/github.com/nhatthm/surveyexpect)](https://goreportcard.com/report/github.com/nhatthm/surveyexpect)
