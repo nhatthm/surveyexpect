@@ -127,9 +127,22 @@ func (a *MultilineAnswer) Do(c Console) error {
 		return nil
 	}
 
-	c.SendLine(a.answer)
-	c.SendLine("")
-	c.SendLine("")
+	lines := strings.Split(a.answer, "\n")
+	lines = append(lines, "")
+
+	if a.answer != "" {
+		lines = append(lines, "")
+	}
+
+	cnt := len(lines) - 1
+
+	for i, l := range lines {
+		c.SendLine(l)
+
+		if i < cnt {
+			_ = waitForCursorTwice(c)
+		}
+	}
 
 	return nil
 }
