@@ -180,7 +180,7 @@ func (a *HelpAction) Do(c Console) error {
 
 // String represents the answer as a string.
 func (a *HelpAction) String() string {
-	return fmt.Sprintf("press %q", a.icon)
+	return fmt.Sprintf("press %q and see %q", a.icon, a.help)
 }
 
 func pressHelp(help string, options ...string) *HelpAction {

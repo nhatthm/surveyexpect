@@ -63,7 +63,7 @@ func TestMultiSelectPrompt(t *testing.T) {
 			scenario: "navigation",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectMultiSelect("Select destinations").
-					Type("United").
+					Type("United").Delete(2).
 					ExpectOptions(
 						"> [ ]  United Kingdom",
 						"[ ]  United States",
@@ -158,10 +158,21 @@ func TestMultiSelectPrompt_NoHelpButStillExpect(t *testing.T) {
 		s.WithTimeout(50 * time.Millisecond)
 
 		s.ExpectMultiSelect("Select destinations").
-			ShowHelp("Your favorite countries")
+			ShowHelp("Your favorite countries").
+			ExpectOptions(
+				"> [ ]  option 1",
+				"[ ]  option 2",
+			)
 	})(testingT)
 
-	expectedError := "there are remaining expectations that were not met:\n\nExpect : MultiSelect Prompt\nMessage: \"Select destinations\"\npress \"?\""
+	expectedError := `there are remaining expectations that were not met:
+
+Expect : MultiSelect Prompt
+Message: "Select destinations"
+press "?" and see "Your favorite countries"
+Expect a multiselect list:
+> [ ]  option 1
+  [ ]  option 2`
 
 	p := &survey.MultiSelect{
 		Message: "Select destinations",

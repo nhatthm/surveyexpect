@@ -135,10 +135,21 @@ func TestSelectPrompt_NoHelpButStillExpect(t *testing.T) {
 		s.WithTimeout(50 * time.Millisecond)
 
 		s.ExpectSelect("Select a country").
-			ShowHelp("Your favorite country")
+			ShowHelp("Your favorite country").
+			ExpectOptions(
+				"> option 1",
+				"option 2",
+			)
 	})(testingT)
 
-	expectedError := "there are remaining expectations that were not met:\n\nExpect : Select Prompt\nMessage: \"Select a country\"\npress \"?\""
+	expectedError := `there are remaining expectations that were not met:
+
+Expect : Select Prompt
+Message: "Select a country"
+press "?" and see "Your favorite country"
+Expect a select list:
+> option 1
+  option 2`
 
 	p := &survey.Select{
 		Message: "Select a country",
