@@ -100,10 +100,13 @@ func (p *SelectPrompt) ExpectOptions(options ...string) *SelectPrompt {
 }
 
 // Do runs the step.
+// nolint: errcheck
 func (p *SelectPrompt) Do(c Console) error {
 	if _, err := c.ExpectString(p.message); err != nil {
 		return err
 	}
+
+	_, _ = c.ExpectString("\x1b[?25l")
 
 	return p.steps.Do(c)
 }
