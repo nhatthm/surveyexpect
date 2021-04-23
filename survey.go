@@ -76,6 +76,18 @@ func (s *Survey) ExpectInput(message string) *InputPrompt {
 	return e
 }
 
+// ExpectMultiSelect expects a MultiSelectPrompt.
+//
+//    Survey.ExpectMultiSelect("Enter password:").
+//    	Enter()
+func (s *Survey) ExpectMultiSelect(message string) *MultiSelectPrompt {
+	e := newMultiSelect(s, message)
+
+	s.addStep(e)
+
+	return e
+}
+
 // ExpectPassword expects a PasswordPrompt.
 //
 //    Survey.ExpectPassword("Enter password:").

@@ -10,6 +10,11 @@ import (
 // ReactionTime is to create a small delay to simulate human reaction.
 var ReactionTime = 10 * time.Millisecond
 
+// WaitForReaction creates a small delay to simulate human reaction.
+func WaitForReaction() <-chan time.Time {
+	return time.After(ReactionTime)
+}
+
 // Answer is an expectation for answering a question.
 type Answer interface {
 	Step
@@ -135,8 +140,20 @@ func pressArrowDown() *Action {
 	return action(terminal.KeyArrowDown, "ARROW DOWN")
 }
 
+func pressArrowLeft() *Action {
+	return action(terminal.KeyArrowLeft, "ARROW LEFT")
+}
+
+func pressArrowRight() *Action {
+	return action(terminal.KeyArrowRight, "ARROW RIGHT")
+}
+
 func pressInterrupt() *Action {
 	return action(terminal.KeyInterrupt, "INTERRUPT")
+}
+
+func pressSpace() *Action {
+	return action(terminal.KeySpace, "SPACE")
 }
 
 func pressDelete() *Action {

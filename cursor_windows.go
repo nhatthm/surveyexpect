@@ -3,7 +3,7 @@
 package surveyexpect
 
 func waitForCursor(c Console) error {
-	<-time.After(ReactionTime)
+	<-WaitForReaction()
 
 	return nil
 }

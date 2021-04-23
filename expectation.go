@@ -5,9 +5,12 @@ import (
 	"regexp"
 )
 
-var indicatorRegex = regexp.MustCompile(`^([^ ]\s+)(.*)`)
+var (
+	selectIndicatorRegex      = regexp.MustCompile(`^([^ ]\s+)(.*)`)
+	multiselectIndicatorRegex = regexp.MustCompile(`^([^ ]\s+)(\[[x ]].*)`)
+)
 
-// SelectExpect expects strings from console.
+// SelectExpect expects a select list from console.
 type SelectExpect []string
 
 // Do runs the step.
@@ -23,17 +26,62 @@ func (e *SelectExpect) Do(c Console) error {
 
 // String represents the answer as a string.
 func (e *SelectExpect) String() string {
-	breakdown := make([]map[string]string, 0)
+	var sb stringsBuilder
+
+	sb.WriteLinef("Expect a select list:")
+	writeSelectList(&sb, *e, selectIndicatorRegex)
+
+	return sb.String()
+}
+
+func expectSelect(options ...string) *SelectExpect {
+	e := SelectExpect(options)
+
+	return &e
+}
+
+// MultiSelectExpect expects a multiselect list from console.
+type MultiSelectExpect []string
+
+// Do runs the step.
+func (e *MultiSelectExpect) Do(c Console) error {
+	for _, o := range *e {
+		if _, err := c.ExpectString(o); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// String represents the answer as a string.
+func (e *MultiSelectExpect) String() string {
+	var sb stringsBuilder
+
+	sb.WriteLinef("Expect a multiselect list:")
+	writeSelectList(&sb, *e, multiselectIndicatorRegex)
+
+	return sb.String()
+}
+
+func expectMultiSelect(options ...string) *MultiSelectExpect {
+	e := MultiSelectExpect(options)
+
+	return &e
+}
+
+func breakdownOptions(options []string, indicator *regexp.Regexp) (breakdown []map[string]string, pad string) {
+	breakdown = make([]map[string]string, 0, len(options))
 
 	var size int
 
-	for _, o := range *e {
+	for _, o := range options {
 		e := map[string]string{
 			"prefix": "",
 			"option": "",
 		}
 
-		if m := indicatorRegex.FindStringSubmatch(o); m != nil {
+		if m := indicator.FindStringSubmatch(o); m != nil {
 			e["prefix"] = m[1]
 			e["option"] = m[2]
 			l := len(m[1])
@@ -48,12 +96,11 @@ func (e *SelectExpect) String() string {
 		breakdown = append(breakdown, e)
 	}
 
-	var (
-		sb  stringsBuilder
-		pad = fmt.Sprintf("%%-%ds", size)
-	)
+	return breakdown, fmt.Sprintf("%%-%ds", size)
+}
 
-	sb.WriteLinef("Expect a select list:")
+func writeSelectList(sb *stringsBuilder, options []string, indicator *regexp.Regexp) {
+	breakdown, pad := breakdownOptions(options, indicator)
 
 	for i, o := range breakdown {
 		if i > 0 {
@@ -63,12 +110,4 @@ func (e *SelectExpect) String() string {
 		sb.Writef(pad, o["prefix"]).
 			Writef(o["option"])
 	}
-
-	return sb.String()
-}
-
-func expectSelect(options ...string) *SelectExpect {
-	e := SelectExpect(options)
-
-	return &e
 }
