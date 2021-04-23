@@ -29,9 +29,9 @@ Type | Supported | Supported Actions
 `Editor` | ✘ |
 `Input` | ✓ | <ul><li>Answer</li><li>No answer</li><li>Suggestions with navigation (Arrow Up `↑`, Arrow Down `↓`, Tab `⇆`, Esc `⎋`, Enter `⏎`)</li><li>Interrupt (`^C`)</li><li>Ask for help</li></ul>
 `Multiline` | ✘ |
-`Multiselect` | ✘ |  
+`Multiselect` | ✓ | <ul><li>Type to filter, delete</li><li>Navigation (Move Up `↑`, Move Down `↓`, Select None `←`, Select All `→`, Tab `⇆`, Enter `⏎`)</li><li>Interrupt (`^C`)</li><li>Ask for help</li></ul>
 `Password` | ✓ | <ul><li>Answer (+ check for `*`)</li><li>No answer</li><li>Interrupt (`^C`)</li><li>Ask for help</li></ul>
-`Select` | ✓ | <ul><li>Type to filter</li><li>Navigation (Arrow Up `↑`, Arrow Down `↓`, Tab `⇆`, Esc `⎋`, Enter `⏎`)</li><li>Interrupt (`^C`)</li><li>Ask for help</li></ul>
+`Select` | ✓ | <ul><li>Type to filter, delete</li><li>Navigation (Move Up `↑`, Move Down `↓`, Tab `⇆`, Enter `⏎`)</li><li>Interrupt (`^C`)</li><li>Ask for help</li></ul>
 
 ### Expect
 

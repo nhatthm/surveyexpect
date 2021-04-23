@@ -12,7 +12,7 @@ import (
 	"github.com/nhatthm/surveyexpect/options"
 )
 
-func TestSelectPrompt(t *testing.T) {
+func TestMultiSelectPrompt(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
@@ -21,32 +21,32 @@ func TestSelectPrompt(t *testing.T) {
 		help           string
 		showHelp       bool
 		options        []string
-		expectedAnswer string
+		expectedAnswer []string
 		expectedError  string
 	}{
 		{
 			scenario: "enter without taking any other actions",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectSelect("Select a country").
+				s.ExpectMultiSelect("Select destinations").
 					Enter()
 			}),
-			expectedAnswer: "France",
 		},
 		{
 			scenario: "with help and ask for it",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectSelect("Select a country  [Use arrows to move, type to filter, ? for more help]").
-					ShowHelp("Your favorite country").
+				s.ExpectMultiSelect("Select destinations  [Use arrows to move, space to select, <right> to all, <left> to none, type to filter, ? for more help]").
+					ShowHelp("Your favorite countries").
+					Select().
 					Enter()
 			}),
-			help:           "Your favorite country",
+			help:           "Your favorite countries",
 			showHelp:       true,
-			expectedAnswer: "France",
+			expectedAnswer: []string{"France"},
 		},
 		{
 			scenario: "input is interrupted",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectSelect("Select a country").
+				s.ExpectMultiSelect("Select destinations").
 					Interrupt()
 			}),
 			expectedError: "interrupt",
@@ -54,7 +54,7 @@ func TestSelectPrompt(t *testing.T) {
 		{
 			scenario: "input is invalid",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectSelect("Select a country").
+				s.ExpectMultiSelect("Select destinations").
 					Type("\033X")
 			}),
 			expectedError: `Unexpected Escape Sequence: ['\x1b' 'X']`,
@@ -62,26 +62,49 @@ func TestSelectPrompt(t *testing.T) {
 		{
 			scenario: "navigation",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectSelect("Select a country").
-					Type("United").
+				s.ExpectMultiSelect("Select destinations").
+					Type("United").Delete(2).
 					ExpectOptions(
-						"> United Kingdom",
-						"United States",
+						"> [ ]  United Kingdom",
+						"[ ]  United States",
 					).
-					Delete(6).
+					SelectAll().
 					Tab(2).MoveDown().MoveUp(4).
 					ExpectOptions(
-						"Germany",
-						"Malaysia",
-						"Singapore",
-						"Thailand",
-						"United Kingdom",
-						"United States",
-						"> Vietnam",
+						"[ ]  Germany",
+						"[ ]  Malaysia",
+						"[ ]  Singapore",
+						"[ ]  Thailand",
+						"[x]  United Kingdom",
+						"[x]  United States",
+						"> [ ]  Vietnam",
 					).
+					MoveDown().Select().
+					ExpectOptions(
+						"[x]  France",
+						"[ ]  Germany",
+						"[ ]  Malaysia",
+						"[ ]  Singapore",
+						"[ ]  Thailand",
+						"[x]  United Kingdom",
+						"[x]  United States",
+					).
+					SelectNone().
+					Select().Select().
+					MoveUp().
+					ExpectOptions(
+						"[ ]  Germany",
+						"[ ]  Malaysia",
+						"[ ]  Singapore",
+						"[ ]  Thailand",
+						"[ ]  United Kingdom",
+						"[ ]  United States",
+						"> [ ]  Vietnam",
+					).
+					Select().
 					Enter()
 			}),
-			expectedAnswer: "Vietnam",
+			expectedAnswer: []string{"Vietnam"},
 		},
 	}
 
@@ -92,9 +115,9 @@ func TestSelectPrompt(t *testing.T) {
 
 			// Prepare the survey.
 			s := tc.expectSurvey(t)
-			p := &survey.SelectTemplateData{
-				Select: survey.Select{
-					Message: "Select a country",
+			p := &survey.MultiSelectTemplateData{
+				MultiSelect: survey.MultiSelect{
+					Message: "Select destinations",
 					Help:    tc.help,
 					Options: []string{
 						"France",
@@ -112,7 +135,7 @@ func TestSelectPrompt(t *testing.T) {
 
 			// Start the survey.
 			s.Start(func(stdio terminal.Stdio) {
-				var answer string
+				var answer []string
 				err := survey.AskOne(p, &answer, options.WithStdio(stdio))
 
 				assert.Equal(t, tc.expectedAnswer, answer)
@@ -127,32 +150,32 @@ func TestSelectPrompt(t *testing.T) {
 	}
 }
 
-func TestSelectPrompt_NoHelpButStillExpect(t *testing.T) {
+func TestMultiSelectPrompt_NoHelpButStillExpect(t *testing.T) {
 	t.Parallel()
 
 	testingT := T()
 	s := surveyexpect.Expect(func(s *surveyexpect.Survey) {
 		s.WithTimeout(50 * time.Millisecond)
 
-		s.ExpectSelect("Select a country").
-			ShowHelp("Your favorite country").
+		s.ExpectMultiSelect("Select destinations").
+			ShowHelp("Your favorite countries").
 			ExpectOptions(
-				"> option 1",
-				"option 2",
+				"> [ ]  option 1",
+				"[ ]  option 2",
 			)
 	})(testingT)
 
 	expectedError := `there are remaining expectations that were not met:
 
-Expect : Select Prompt
-Message: "Select a country"
-press "?" and see "Your favorite country"
-Expect a select list:
-> option 1
-  option 2`
+Expect : MultiSelect Prompt
+Message: "Select destinations"
+press "?" and see "Your favorite countries"
+Expect a multiselect list:
+> [ ]  option 1
+  [ ]  option 2`
 
-	p := &survey.Select{
-		Message: "Select a country",
+	p := &survey.MultiSelect{
+		Message: "Select destinations",
 		Options: []string{
 			"option 1",
 			"option 2",
@@ -161,7 +184,7 @@ Expect a select list:
 
 	// Start the survey.
 	s.Start(func(stdio terminal.Stdio) {
-		var answer string
+		var answer []string
 		err := survey.AskOne(p, &answer, options.WithStdio(stdio))
 
 		assert.Empty(t, answer)
@@ -173,7 +196,7 @@ Expect a select list:
 	t.Log(testingT.LogString())
 }
 
-func TestSelectPrompt_SurveyInterrupted(t *testing.T) {
+func TestMultiSelectPrompt_SurveyInterrupted(t *testing.T) {
 	t.Parallel()
 
 	testCases := []struct {
@@ -184,7 +207,7 @@ func TestSelectPrompt_SurveyInterrupted(t *testing.T) {
 		{
 			scenario: "interrupt",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectSelect("Select a country").
+				s.ExpectMultiSelect("Select destinations").
 					Interrupt()
 			}),
 			expectedError: "interrupt",
@@ -192,7 +215,7 @@ func TestSelectPrompt_SurveyInterrupted(t *testing.T) {
 		{
 			scenario: "invalid input",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
-				s.ExpectSelect("Select a country").
+				s.ExpectMultiSelect("Select destinations").
 					Type("\033X")
 			}),
 			expectedError: `Unexpected Escape Sequence: ['\x1b' 'X']`,
@@ -209,25 +232,25 @@ func TestSelectPrompt_SurveyInterrupted(t *testing.T) {
 
 			questions := []*survey.Question{
 				{
-					Name:   "country",
-					Prompt: &survey.Select{Message: "Select a country", Options: []string{"Germany", "Vietnam"}},
+					Name:   "countries",
+					Prompt: &survey.MultiSelect{Message: "Select destinations", Options: []string{"Germany", "Vietnam"}},
 				},
 				{
-					Name:   "transport",
-					Prompt: &survey.Select{Message: "Select a transport", Options: []string{"Train", "Bus"}},
+					Name:   "transports",
+					Prompt: &survey.MultiSelect{Message: "Select transports", Options: []string{"Train", "Bus"}},
 				},
 			}
 
 			expectedResult := map[string]interface{}{
-				"country":   "Vietnam",
-				"transport": "Bus",
+				"countries":  []string{"Vietnam"},
+				"transports": []string{"Bus"},
 			}
 
 			// Start the survey.
 			s.Start(func(stdio terminal.Stdio) {
 				result := map[string]interface{}{
-					"country":   "Vietnam",
-					"transport": "Bus",
+					"countries":  []string{"Vietnam"},
+					"transports": []string{"Bus"},
 				}
 				err := survey.Ask(questions, &result, options.WithStdio(stdio))
 

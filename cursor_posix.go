@@ -2,8 +2,6 @@
 
 package surveyexpect
 
-import "time"
-
 func waitForCursor(c Console) error {
 	// ANSI escape sequence for DSR - Device Status Report
 	// https://en.wikipedia.org/wiki/ANSI_escape_code#CSI_sequences
@@ -16,7 +14,7 @@ func waitForCursor(c Console) error {
 	// After rendering the question, the prompt asks for the cursor's size and location (ESC[6n) and expects to receive
 	// `ESC[n;mR` in return before reading the answer. If the addStep answers too fast (so the answer will be in between
 	// `ESC[n;mR` and reading answer), the prompt won't see the answer and hangs indefinitely.
-	<-time.After(ReactionTime)
+	<-WaitForReaction()
 
 	return err
 }
