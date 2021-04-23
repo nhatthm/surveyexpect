@@ -26,7 +26,7 @@ go get github.com/nhatthm/surveyexpect
 Type | Supported | Supported Actions
 :--- | :---: | :---
 `Confirm` | ✓ | <ul><li>Answer `yes`, `no` or a custom one</li><li>Interrupt (`^C`)</li><li>Ask for help</li></ul>
-`Editor` | ✘ |
+`Editor` | ✘ | __*There is no plan for support*__
 `Input` | ✓ | <ul><li>Answer</li><li>No answer</li><li>Suggestions with navigation (Arrow Up `↑`, Arrow Down `↓`, Tab `⇆`, Esc `⎋`, Enter `⏎`)</li><li>Interrupt (`^C`)</li><li>Ask for help</li></ul>
 `Multiline` | ✘ | <ul><li>Answer</li><li>No answer</li><li>Interrupt (`^C`)</li></ul>
 `Multiselect` | ✓ | <ul><li>Type to filter, delete</li><li>Navigation (Move Up `↑`, Move Down `↓`, Select None `←`, Select All `→`, Tab `⇆`, Enter `⏎`)</li><li>Interrupt (`^C`)</li><li>Ask for help</li></ul>
