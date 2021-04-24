@@ -141,7 +141,13 @@ func TestMyPackage(t *testing.T) {
 }
 ```
 
-You can find more examples in the tests of this library. For example: https://github.com/nhatthm/surveyexpect/blob/master/confirm_test.go or https://github.com/nhatthm/surveyexpect/blob/master/confirm_test.go
+You can find more examples in the tests of this library:
+- Confirm: https://github.com/nhatthm/surveyexpect/blob/master/confirm_test.go
+- Input: https://github.com/nhatthm/surveyexpect/blob/master/input_test.go
+- Multiline: https://github.com/nhatthm/surveyexpect/blob/master/multiline_test.go
+- Multiselect: https://github.com/nhatthm/surveyexpect/blob/master/multiselect_test.go
+- Password: https://github.com/nhatthm/surveyexpect/blob/master/password_test.go
+- Select: https://github.com/nhatthm/surveyexpect/blob/master/select_test.go
 
 ## Donation
 
