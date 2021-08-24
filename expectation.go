@@ -111,3 +111,22 @@ func writeSelectList(sb *stringsBuilder, options []string, indicator *regexp.Reg
 			Writef(o["option"])
 	}
 }
+
+// StringExpect expects a string from console.
+type StringExpect string
+
+// Do runs the step.
+func (e StringExpect) Do(c Console) error {
+	_, err := c.ExpectString(string(e))
+
+	return err
+}
+
+// String represents the answer as a string.
+func (e StringExpect) String() string {
+	return fmt.Sprintf("Expect a string: %q", string(e))
+}
+
+func expectString(s string) StringExpect {
+	return StringExpect(s)
+}

@@ -47,6 +47,15 @@ func TestSelectPrompt(t *testing.T) {
 			scenario: "input is interrupted",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectSelect("Select a country").
+					ExpectOptions(
+						"> France",
+						"Germany",
+						"Malaysia",
+						"Singapore",
+						"Thailand",
+						"United Kingdom",
+						"United States",
+					).
 					Interrupt()
 			}),
 			expectedError: "interrupt",
@@ -185,6 +194,10 @@ func TestSelectPrompt_SurveyInterrupted(t *testing.T) {
 			scenario: "interrupt",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectSelect("Select a country").
+					ExpectOptions(
+						"> Germany",
+						"Vietnam",
+					).
 					Interrupt()
 			}),
 			expectedError: "interrupt",

@@ -352,6 +352,7 @@ func TestInputPrompt_AskForSuggestionsThenInterrupt(t *testing.T) {
 				"john.nguyen",
 				"john.pierre",
 			).
+			Interrupt().
 			Interrupt()
 	})(t)
 
@@ -418,6 +419,8 @@ func TestInputPrompt_AskForSuggestionsButThereIsNone(t *testing.T) {
 
 Expect : Input Prompt
 Message: "Enter username:"
+Expect a string: "Enter username:"
+Expect a string: "[Use arrows to move, enter to select, type to continue]"
 Expect a select list:
 > john.doe
   john.lennon

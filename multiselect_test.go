@@ -47,6 +47,15 @@ func TestMultiSelectPrompt(t *testing.T) {
 			scenario: "input is interrupted",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectMultiSelect("Select destinations").
+					ExpectOptions(
+						"> [ ]  France",
+						"[ ]  Germany",
+						"[ ]  Malaysia",
+						"[ ]  Singapore",
+						"[ ]  Thailand",
+						"[ ]  United Kingdom",
+						"[ ]  United States",
+					).
 					Interrupt()
 			}),
 			expectedError: "interrupt",
@@ -208,6 +217,10 @@ func TestMultiSelectPrompt_SurveyInterrupted(t *testing.T) {
 			scenario: "interrupt",
 			expectSurvey: surveyexpect.Expect(func(s *surveyexpect.Survey) {
 				s.ExpectMultiSelect("Select destinations").
+					ExpectOptions(
+						"> [ ]  Germany",
+						"[ ]  Vietnam",
+					).
 					Interrupt()
 			}),
 			expectedError: "interrupt",

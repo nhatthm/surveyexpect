@@ -232,7 +232,8 @@ func (a *InputSuggestionSteps) append(steps ...Step) *InputSuggestionSteps {
 //    	Type("hello").
 //    	Tab(5)
 func (a *InputSuggestionSteps) Tab(times ...int) *InputSuggestionSteps {
-	return a.append(repeatStep(pressTab(), times...)...)
+	return a.append(repeatStep(pressTab(), times...)...).
+		append(expectString(a.parent.message), expectString(`[Use arrows to move, enter to select, type to continue]`))
 }
 
 // Esc sends the ESC key.
@@ -241,7 +242,7 @@ func (a *InputSuggestionSteps) Tab(times ...int) *InputSuggestionSteps {
 //    	Type("hello").
 //    	Esc()
 func (a *InputSuggestionSteps) Esc() *InputSuggestionSteps {
-	return a.append(pressEsc())
+	return a.append(pressEsc(), expectString(a.parent.message), expectString(`for suggestions]`))
 }
 
 // Enter sends the ENTER key and ends the sequence.
@@ -254,14 +255,14 @@ func (a *InputSuggestionSteps) Enter() {
 	a.steps.Close()
 }
 
-// Interrupt sends ^C and ends the sequence.
-//
+// Interrupt sends ^C and closes the suggestions.
 //    Survey.ExpectInput("Enter your name:").
 //    	Type("johnny").
 //    	Interrupt()
-func (a *InputSuggestionSteps) Interrupt() {
+func (a *InputSuggestionSteps) Interrupt() *InputSuggestionSteps {
 	a.append(pressInterrupt())
-	a.steps.Close()
+
+	return a
 }
 
 // MoveUp sends the ARROW UP key the indicated times. Default is 1 when omitted.
