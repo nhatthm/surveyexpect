@@ -66,7 +66,7 @@ func TestMultiSelectPrompt(t *testing.T) {
 				s.ExpectMultiSelect("Select destinations").
 					Type("\033X")
 			}),
-			expectedError: `Unexpected Escape Sequence: ['\x1b' 'X']`,
+			expectedError: `unexpected escape sequence from terminal: ['\x1b' 'X']`,
 		},
 		{
 			scenario: "navigation",
@@ -231,7 +231,7 @@ func TestMultiSelectPrompt_SurveyInterrupted(t *testing.T) {
 				s.ExpectMultiSelect("Select destinations").
 					Type("\033X")
 			}),
-			expectedError: `Unexpected Escape Sequence: ['\x1b' 'X']`,
+			expectedError: `unexpected escape sequence from terminal: ['\x1b' 'X']`,
 		},
 	}
 

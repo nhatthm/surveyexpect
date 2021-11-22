@@ -115,7 +115,7 @@ func TestInputPrompt(t *testing.T) {
 					Interrupted()
 			}),
 			message:       "Enter a username:",
-			expectedError: `Unexpected Escape Sequence: ['\x1b' 'X']`,
+			expectedError: `unexpected escape sequence from terminal: ['\x1b' 'X']`,
 		},
 		{
 			scenario: "answer is required",
@@ -219,7 +219,7 @@ func TestInputPrompt_SurveyInterrupted(t *testing.T) {
 					Answer("\033X").
 					Interrupted()
 			}),
-			expectedError: `Unexpected Escape Sequence: ['\x1b' 'X']`,
+			expectedError: `unexpected escape sequence from terminal: ['\x1b' 'X']`,
 		},
 	}
 

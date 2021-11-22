@@ -52,7 +52,7 @@ func TestMultilinePrompt(t *testing.T) {
 					Answer("\033X").
 					Interrupted()
 			}),
-			expectedError: `Unexpected Escape Sequence: ['\x1b' 'X']`,
+			expectedError: `unexpected escape sequence from terminal: ['\x1b' 'X']`,
 		},
 		{
 			scenario: "answer is required",
@@ -122,7 +122,7 @@ func TestMultilinePrompt_SurveyInterrupted(t *testing.T) {
 					Answer("\033X").
 					Interrupted()
 			}),
-			expectedError: `Unexpected Escape Sequence: ['\x1b' 'X']`,
+			expectedError: `unexpected escape sequence from terminal: ['\x1b' 'X']`,
 		},
 	}
 

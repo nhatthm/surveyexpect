@@ -126,7 +126,7 @@ func TestConfirm(t *testing.T) {
 					Answer("\033X").
 					Interrupted()
 			}),
-			expectedError: `Unexpected Escape Sequence: ['\x1b' 'X']`,
+			expectedError: `unexpected escape sequence from terminal: ['\x1b' 'X']`,
 		},
 		{
 			scenario: "input is invalid",
@@ -232,7 +232,7 @@ func TestConfirm_SurveyInterrupted(t *testing.T) {
 					Answer("\033X").
 					Interrupted()
 			}),
-			expectedError: `Unexpected Escape Sequence: ['\x1b' 'X']`,
+			expectedError: `unexpected escape sequence from terminal: ['\x1b' 'X']`,
 		},
 	}
 

@@ -66,7 +66,7 @@ func TestSelectPrompt(t *testing.T) {
 				s.ExpectSelect("Select a country").
 					Type("\033X")
 			}),
-			expectedError: `Unexpected Escape Sequence: ['\x1b' 'X']`,
+			expectedError: `unexpected escape sequence from terminal: ['\x1b' 'X']`,
 		},
 		{
 			scenario: "navigation",
@@ -208,7 +208,7 @@ func TestSelectPrompt_SurveyInterrupted(t *testing.T) {
 				s.ExpectSelect("Select a country").
 					Type("\033X")
 			}),
-			expectedError: `Unexpected Escape Sequence: ['\x1b' 'X']`,
+			expectedError: `unexpected escape sequence from terminal: ['\x1b' 'X']`,
 		},
 	}
 
