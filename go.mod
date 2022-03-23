@@ -3,14 +3,14 @@ module github.com/nhatthm/surveyexpect
 go 1.17
 
 require (
-	github.com/AlecAivazis/survey/v2 v2.3.3
+	github.com/AlecAivazis/survey/v2 v2.3.4
 	github.com/Netflix/go-expect v0.0.0-20220104043353-73e0943537d2
+	github.com/creack/pty v1.1.17
 	github.com/hinshun/vt10x v0.0.0-20220301184237-5011da428d02
 	github.com/stretchr/testify v1.7.1
 )
 
 require (
-	github.com/creack/pty v1.1.17 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
