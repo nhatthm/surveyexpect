@@ -3,6 +3,8 @@ package surveyexpect
 import (
 	"testing"
 
+	"github.com/Netflix/go-expect"
+	pseudotty "github.com/creack/pty"
 	"github.com/hinshun/vt10x"
 	"github.com/stretchr/testify/require"
 )
@@ -10,11 +12,16 @@ import (
 func TestWaitForCursor(t *testing.T) {
 	t.Parallel()
 
-	console, _, err := vt10x.NewVT10XConsole()
+	pty, tty, err := pseudotty.Open()
 	require.NoError(t, err)
 
-	_ = console.Tty().Close() // nolint: errcheck
-	_ = console.Close()       // nolint: errcheck
+	term := vt10x.New(vt10x.WithWriter(tty))
+
+	console, err := expect.NewConsole(expect.WithStdin(pty), expect.WithStdout(term), expect.WithCloser(pty, tty))
+	require.NoError(t, err)
+
+	_ = console.Close() // nolint: errcheck
+	_ = tty.Close()     // nolint: errcheck
 
 	err = waitForCursor(console)
 	require.Error(t, err)
@@ -23,11 +30,16 @@ func TestWaitForCursor(t *testing.T) {
 func TestWaitForCursorTwice(t *testing.T) {
 	t.Parallel()
 
-	console, _, err := vt10x.NewVT10XConsole()
+	pty, tty, err := pseudotty.Open()
 	require.NoError(t, err)
 
-	_ = console.Tty().Close() // nolint: errcheck
-	_ = console.Close()       // nolint: errcheck
+	term := vt10x.New(vt10x.WithWriter(tty))
+
+	console, err := expect.NewConsole(expect.WithStdin(pty), expect.WithStdout(term), expect.WithCloser(pty, tty))
+	require.NoError(t, err)
+
+	_ = console.Close() // nolint: errcheck
+	_ = tty.Close()     // nolint: errcheck
 
 	err = waitForCursorTwice(console)
 	require.Error(t, err)
