@@ -10,6 +10,7 @@ import (
 
 	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/Netflix/go-expect"
+	pseudotty "github.com/creack/pty"
 	"github.com/hinshun/vt10x"
 	"github.com/stretchr/testify/require"
 )
@@ -215,9 +216,20 @@ func (s *Survey) Start(fn func(stdio terminal.Stdio)) {
 	s.startMu.Lock()
 	defer s.startMu.Unlock()
 
+	pty, tty, err := pseudotty.Open()
+	require.NoError(s.test, err)
+
+	term := vt10x.New(vt10x.WithWriter(tty))
+
 	// Setup a console.
 	buf := new(Buffer)
-	console, state, err := vt10x.NewVT10XConsole(expect.WithStdout(buf))
+
+	console, err := expect.NewConsole(
+		expect.WithStdin(pty),
+		expect.WithStdout(term),
+		expect.WithStdout(buf),
+		expect.WithCloser(pty, tty),
+	)
 	require.NoError(s.test, err)
 
 	// Run the survey in background and close console when it is done.
@@ -231,7 +243,7 @@ func (s *Survey) Start(fn func(stdio terminal.Stdio)) {
 	s.test.Logf("Raw output: %q\n", buf.String())
 
 	// Dump the terminal's screen.
-	s.test.Logf("%s\n", expect.StripTrailingEmptyLines(state.String()))
+	s.test.Logf("%s\n", expect.StripTrailingEmptyLines(term.String()))
 }
 
 // ExpectationsWereMet checks whether all queued expectations were met in order.
