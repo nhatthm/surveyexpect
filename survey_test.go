@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/nhatthm/surveyexpect"
+	"go.nhat.io/surveyexpect"
 )
 
 func TestSurvey_ExpectNoExpectation(t *testing.T) {

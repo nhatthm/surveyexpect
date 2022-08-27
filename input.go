@@ -20,8 +20,8 @@ type InputPrompt struct {
 
 // ShowHelp sets help for the expectation.
 //
-//    Survey.ExpectInput("Enter your name:").
-//    	ShowHelp("It's your full name")
+//	Survey.ExpectInput("Enter your name:").
+//		ShowHelp("It's your full name")
 func (p *InputPrompt) ShowHelp(help string, options ...string) {
 	p.lock()
 	defer p.unlock()
@@ -32,8 +32,8 @@ func (p *InputPrompt) ShowHelp(help string, options ...string) {
 
 // Interrupt marks the answer is interrupted.
 //
-//    Survey.ExpectInput("Enter your name:").
-//    	Interrupt()
+//	Survey.ExpectInput("Enter your name:").
+//		Interrupt()
 func (p *InputPrompt) Interrupt() {
 	p.lock()
 	defer p.unlock()
@@ -44,8 +44,8 @@ func (p *InputPrompt) Interrupt() {
 
 // Answer sets the answer to the input prompt.
 //
-//    Survey.ExpectInput("Enter your name:").
-//    	Answer("johnny")
+//	Survey.ExpectInput("Enter your name:").
+//		Answer("johnny")
 func (p *InputPrompt) Answer(answer string) *InputAnswer {
 	p.lock()
 	defer p.unlock()
@@ -58,8 +58,8 @@ func (p *InputPrompt) Answer(answer string) *InputAnswer {
 
 // Type starts a sequence of steps to interact with suggestion mode.
 //
-//    Survey.ExpectInput("Enter your name:").
-//    	Type("johnny")
+//	Survey.ExpectInput("Enter your name:").
+//		Type("johnny")
 func (p *InputPrompt) Type(s string) *InputSuggestionSteps {
 	p.lock()
 	defer p.unlock()
@@ -72,8 +72,8 @@ func (p *InputPrompt) Type(s string) *InputSuggestionSteps {
 
 // Tab starts a sequence of steps to interact with suggestion mode. Default is 1 when omitted.
 //
-//    Survey.ExpectInput("Enter your name:").
-//    	Tab()
+//	Survey.ExpectInput("Enter your name:").
+//		Tab()
 func (p *InputPrompt) Tab(times ...int) *InputSuggestionSteps {
 	p.lock()
 	defer p.unlock()
@@ -126,27 +126,27 @@ func (p *InputPrompt) String() string {
 
 // Once indicates that the message should only be asked once.
 //
-//    Survey.ExpectInput("Enter your name:").
-//    	Answer("johnny").
-//    	Once()
+//	Survey.ExpectInput("Enter your name:").
+//		Answer("johnny").
+//		Once()
 func (p *InputPrompt) Once() *InputPrompt {
 	return p.Times(1)
 }
 
 // Twice indicates that the message should only be asked twice.
 //
-//    Survey.ExpectInput("Enter your name:").
-//    	Answer("johnny").
-//    	Twice()
+//	Survey.ExpectInput("Enter your name:").
+//		Answer("johnny").
+//		Twice()
 func (p *InputPrompt) Twice() *InputPrompt {
 	return p.Times(2)
 }
 
 // Times indicates that the message should only be asked the indicated number of times.
 //
-//    Survey.ExpectInput("Enter your name:").
-//    	Answer("johnny").
-//    	Times(5)
+//	Survey.ExpectInput("Enter your name:").
+//		Answer("johnny").
+//		Times(5)
 func (p *InputPrompt) Times(i int) *InputPrompt {
 	p.times(i)
 
@@ -228,9 +228,9 @@ func (a *InputSuggestionSteps) append(steps ...Step) *InputSuggestionSteps {
 
 // Tab sends the TAB key the indicated times. Default is 1 when omitted.
 //
-//    Survey.ExpectInput("Enter your name:").
-//    	Type("hello").
-//    	Tab(5)
+//	Survey.ExpectInput("Enter your name:").
+//		Type("hello").
+//		Tab(5)
 func (a *InputSuggestionSteps) Tab(times ...int) *InputSuggestionSteps {
 	return a.append(repeatStep(pressTab(), times...)...).
 		append(expectString(a.parent.message), expectString(`[Use arrows to move, enter to select, type to continue]`))
@@ -238,27 +238,28 @@ func (a *InputSuggestionSteps) Tab(times ...int) *InputSuggestionSteps {
 
 // Esc sends the ESC key.
 //
-//    Survey.ExpectInput("Enter your name:").
-//    	Type("hello").
-//    	Esc()
+//	Survey.ExpectInput("Enter your name:").
+//		Type("hello").
+//		Esc()
 func (a *InputSuggestionSteps) Esc() *InputSuggestionSteps {
 	return a.append(pressEsc(), expectString(a.parent.message), expectString(`for suggestions]`))
 }
 
 // Enter sends the ENTER key and ends the sequence.
 //
-//    Survey.ExpectInput("Enter your name:").
-//    	Type("hello").
-//    	Enter()
+//	Survey.ExpectInput("Enter your name:").
+//		Type("hello").
+//		Enter()
 func (a *InputSuggestionSteps) Enter() {
 	a.append(pressEnter())
 	a.steps.Close()
 }
 
 // Interrupt sends ^C and closes the suggestions.
-//    Survey.ExpectInput("Enter your name:").
-//    	Type("johnny").
-//    	Interrupt()
+//
+//	Survey.ExpectInput("Enter your name:").
+//		Type("johnny").
+//		Interrupt()
 func (a *InputSuggestionSteps) Interrupt() *InputSuggestionSteps {
 	a.append(pressInterrupt())
 
@@ -267,38 +268,38 @@ func (a *InputSuggestionSteps) Interrupt() *InputSuggestionSteps {
 
 // MoveUp sends the ARROW UP key the indicated times. Default is 1 when omitted.
 //
-//    Survey.ExpectInput("Enter your name:").
-//    	Tab().
-//    	MoveUp(5)
+//	Survey.ExpectInput("Enter your name:").
+//		Tab().
+//		MoveUp(5)
 func (a *InputSuggestionSteps) MoveUp(times ...int) *InputSuggestionSteps {
 	return a.append(repeatStep(pressArrowUp(), times...)...)
 }
 
 // MoveDown sends the ARROW DOWN key the indicated times. Default is 1 when omitted.
 //
-//    Survey.ExpectInput("Enter your name:").
-//    	Tab().
-//    	MoveDown(5)
+//	Survey.ExpectInput("Enter your name:").
+//		Tab().
+//		MoveDown(5)
 func (a *InputSuggestionSteps) MoveDown(times ...int) *InputSuggestionSteps {
 	return a.append(repeatStep(pressArrowDown(), times...)...)
 }
 
 // Delete sends the DELETE key the indicated times. Default is 1 when omitted.
 //
-//    Survey.ExpectInput("Enter your name:").
-//    	Type("johnny").
-//    	Delete(5)
+//	Survey.ExpectInput("Enter your name:").
+//		Type("johnny").
+//		Delete(5)
 func (a *InputSuggestionSteps) Delete(times ...int) *InputSuggestionSteps {
 	return a.append(repeatStep(pressDelete(), times...)...)
 }
 
 // Type sends a string without enter.
 //
-//    Survey.ExpectInput("Enter your name:").
-//    	Type("johnny").
-//    	Tab().
-//    	Type(".c").
-//    	Enter()
+//	Survey.ExpectInput("Enter your name:").
+//		Type("johnny").
+//		Tab().
+//		Type(".c").
+//		Enter()
 func (a *InputSuggestionSteps) Type(s string) *InputSuggestionSteps {
 	return a.append(typeAnswer(s))
 }

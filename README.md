@@ -3,35 +3,35 @@
 [![GitHub Releases](https://img.shields.io/github/v/release/nhatthm/surveyexpect)](https://github.com/nhatthm/surveyexpect/releases/latest)
 [![Build Status](https://github.com/nhatthm/surveyexpect/actions/workflows/test.yaml/badge.svg)](https://github.com/nhatthm/surveyexpect/actions/workflows/test.yaml)
 [![codecov](https://codecov.io/gh/nhatthm/surveyexpect/branch/master/graph/badge.svg?token=eTdAgDE2vR)](https://codecov.io/gh/nhatthm/surveyexpect)
-[![Go Report Card](https://goreportcard.com/badge/github.com/nhatthm/surveyexpect)](https://goreportcard.com/report/github.com/nhatthm/surveyexpect)
-[![GoDevDoc](https://img.shields.io/badge/dev-doc-00ADD8?logo=go)](https://pkg.go.dev/github.com/nhatthm/surveyexpect)
+[![Go Report Card](https://goreportcard.com/badge/go.nhat.io/surveyexpect)](https://goreportcard.com/report/go.nhat.io/surveyexpect)
+[![GoDevDoc](https://img.shields.io/badge/dev-doc-00ADD8?logo=go)](https://pkg.go.dev/go.nhat.io/surveyexpect)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate/?hosted_button_id=PJZSGJN57TDJY)
 
 **surveyexpect** is an Expect library for [AlecAivazis/survey/v2](https://github.com/AlecAivazis/survey)
 
 ## Prerequisites
 
-- `Go >= 1.16`
+- `Go >= 1.17`
 
 ## Install
 
 ```bash
-go get github.com/nhatthm/surveyexpect
+go get go.nhat.io/surveyexpect
 ```
 
 ## Usage
 
 ### Supported Types
 
-Type | Supported | Supported Actions
-:--- | :---: | :---
-`Confirm` | ✓ | <ul><li>Answer `yes`, `no` or a custom one</li><li>Interrupt (`^C`)</li><li>Ask for help</li></ul>
-`Editor` | ✘ | __*There is no plan for support*__
-`Input` | ✓ | <ul><li>Answer</li><li>No answer</li><li>Suggestions with navigation (Arrow Up `↑`, Arrow Down `↓`, Tab `⇆`, Esc `⎋`, Enter `⏎`)</li><li>Interrupt (`^C`)</li><li>Ask for help</li></ul>
-`Multiline` | ✓ | <ul><li>Answer</li><li>No answer</li><li>Interrupt (`^C`)</li></ul>
-`Multiselect` | ✓ | <ul><li>Type to filter, delete</li><li>Navigation (Move Up `↑`, Move Down `↓`, Select None `←`, Select All `→`, Tab `⇆`, Enter `⏎`)</li><li>Interrupt (`^C`)</li><li>Ask for help</li></ul>
-`Password` | ✓ | <ul><li>Answer (+ check for `*`)</li><li>No answer</li><li>Interrupt (`^C`)</li><li>Ask for help</li></ul>
-`Select` | ✓ | <ul><li>Type to filter, delete</li><li>Navigation (Move Up `↑`, Move Down `↓`, Tab `⇆`, Enter `⏎`)</li><li>Interrupt (`^C`)</li><li>Ask for help</li></ul>
+| Type          | Supported | Supported Actions                                                                                                                                                                           |
+|:--------------|:---------:|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Confirm`     |     ✓     | <ul><li>Answer `yes`, `no` or a custom one</li><li>Interrupt (`^C`)</li><li>Ask for help</li></ul>                                                                                          |
+| `Editor`      |     ✘     | __*There is no plan for support*__                                                                                                                                                          |
+| `Input`       |     ✓     | <ul><li>Answer</li><li>No answer</li><li>Suggestions with navigation (Arrow Up `↑`, Arrow Down `↓`, Tab `⇆`, Esc `⎋`, Enter `⏎`)</li><li>Interrupt (`^C`)</li><li>Ask for help</li></ul>    |
+| `Multiline`   |     ✓     | <ul><li>Answer</li><li>No answer</li><li>Interrupt (`^C`)</li></ul>                                                                                                                         |
+| `Multiselect` |     ✓     | <ul><li>Type to filter, delete</li><li>Navigation (Move Up `↑`, Move Down `↓`, Select None `←`, Select All `→`, Tab `⇆`, Enter `⏎`)</li><li>Interrupt (`^C`)</li><li>Ask for help</li></ul> |
+| `Password`    |     ✓     | <ul><li>Answer (+ check for `*`)</li><li>No answer</li><li>Interrupt (`^C`)</li><li>Ask for help</li></ul>                                                                                  |
+| `Select`      |     ✓     | <ul><li>Type to filter, delete</li><li>Navigation (Move Up `↑`, Move Down `↓`, Tab `⇆`, Enter `⏎`)</li><li>Interrupt (`^C`)</li><li>Ask for help</li></ul>                                  |
 
 ### Expect
 
@@ -75,8 +75,8 @@ import (
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
-	"github.com/nhatthm/surveyexpect"
 	"github.com/stretchr/testify/assert"
+	"go.nhat.io/surveyexpect"
 )
 
 func TestMyPackage(t *testing.T) {

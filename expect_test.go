@@ -3,7 +3,7 @@ package surveyexpect_test
 import (
 	"fmt"
 
-	"github.com/nhatthm/surveyexpect"
+	"go.nhat.io/surveyexpect"
 )
 
 type TestingT struct {

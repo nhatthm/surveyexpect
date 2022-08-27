@@ -7,8 +7,8 @@ import (
 	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/nhatthm/surveyexpect"
-	"github.com/nhatthm/surveyexpect/options"
+	"go.nhat.io/surveyexpect"
+	"go.nhat.io/surveyexpect/options"
 )
 
 func TestMultilinePrompt(t *testing.T) {
