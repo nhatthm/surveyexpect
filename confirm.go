@@ -20,8 +20,8 @@ type ConfirmPrompt struct {
 
 // ShowHelp sets help for the expectation.
 //
-//    Survey.ExpectConfirm("Are you sure to delete this file?").
-//    	ShowHelp("The file will be permanently deleted").
+//	Survey.ExpectConfirm("Are you sure to delete this file?").
+//		ShowHelp("The file will be permanently deleted").
 func (c *ConfirmPrompt) ShowHelp(help string, options ...string) {
 	c.lock()
 	defer c.unlock()
@@ -31,8 +31,8 @@ func (c *ConfirmPrompt) ShowHelp(help string, options ...string) {
 
 // Interrupt marks the answer is interrupted.
 //
-//    Survey.ExpectConfirm("Are you sure to delete this file?").
-//    	Interrupt().
+//	Survey.ExpectConfirm("Are you sure to delete this file?").
+//		Interrupt().
 func (c *ConfirmPrompt) Interrupt() {
 	c.lock()
 	defer c.unlock()
@@ -42,8 +42,8 @@ func (c *ConfirmPrompt) Interrupt() {
 
 // Yes sets "yes" as the answer to the prompt.
 //
-//    Survey.ExpectConfirm("Are you sure to delete this file?").
-//    	Yes().
+//	Survey.ExpectConfirm("Are you sure to delete this file?").
+//		Yes().
 func (c *ConfirmPrompt) Yes() {
 	c.lock()
 	defer c.unlock()
@@ -54,8 +54,8 @@ func (c *ConfirmPrompt) Yes() {
 
 // No sets "no" as the answer to the prompt.
 //
-//    Survey.ExpectConfirm("Are you sure to delete this file?").
-//    	No().
+//	Survey.ExpectConfirm("Are you sure to delete this file?").
+//		No().
 func (c *ConfirmPrompt) No() {
 	c.lock()
 	defer c.unlock()
@@ -67,10 +67,11 @@ func (c *ConfirmPrompt) No() {
 // Answer sets a custom answer to the prompt.
 //
 // If the answer is not not empty, the survey expects to have a feedback from the prompt:
-//    `Sorry, your reply was invalid: "hello world!" is not a valid answer, please try again.`
 //
-//    Survey.ExpectConfirm("Are you sure to delete this file?").
-//    	Answer("hello world!").
+//	`Sorry, your reply was invalid: "hello world!" is not a valid answer, please try again.`
+//
+//	Survey.ExpectConfirm("Are you sure to delete this file?").
+//		Answer("hello world!").
 func (c *ConfirmPrompt) Answer(answer string) *ConfirmAnswer {
 	c.lock()
 	defer c.unlock()

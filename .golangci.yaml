@@ -30,14 +30,16 @@ linters:
     - gomnd
     - ifshort
     - interfacer
+    - ireturn
     - lll
     - maligned
-    - nonamedreturns
+    - nolintlint # https://github.com/golangci/golangci-lint/issues/3063
     - paralleltest
     - scopelint
+    - tagliatelle
     - testpackage
-    - wrapcheck
     - varnamelen
+    - wrapcheck
 
 issues:
   exclude-use-default: false

@@ -6,7 +6,7 @@ import (
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
 
-	"github.com/nhatthm/surveyexpect/options"
+	"go.nhat.io/surveyexpect/options"
 )
 
 // StdioProvider is a wrapper around *cobra.Command to provide stdin, stdout and stderr to survey.

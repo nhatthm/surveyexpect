@@ -55,8 +55,8 @@ func (s *Survey) addStep(step Step) {
 
 // ExpectConfirm expects a ConfirmPrompt.
 //
-//    Survey.ExpectConfirm("ConfirmPrompt?").
-//    	Yes()
+//	Survey.ExpectConfirm("ConfirmPrompt?").
+//		Yes()
 func (s *Survey) ExpectConfirm(message string) *ConfirmPrompt {
 	e := newConfirm(s, message)
 
@@ -67,8 +67,8 @@ func (s *Survey) ExpectConfirm(message string) *ConfirmPrompt {
 
 // ExpectInput expects an InputPrompt.
 //
-//    Survey.ExpectInput("Enter password:").
-//    	Answer("hello world!")
+//	Survey.ExpectInput("Enter password:").
+//		Answer("hello world!")
 func (s *Survey) ExpectInput(message string) *InputPrompt {
 	e := newInput(s, message).Once()
 
@@ -79,8 +79,8 @@ func (s *Survey) ExpectInput(message string) *InputPrompt {
 
 // ExpectMultiline expects a MultilinePrompt.
 //
-//    Survey.ExpectMultiline("Enter password:").
-//    	Answer("hello world")
+//	Survey.ExpectMultiline("Enter password:").
+//		Answer("hello world")
 func (s *Survey) ExpectMultiline(message string) *MultilinePrompt {
 	e := newMultiline(s, message)
 
@@ -91,8 +91,8 @@ func (s *Survey) ExpectMultiline(message string) *MultilinePrompt {
 
 // ExpectMultiSelect expects a MultiSelectPrompt.
 //
-//    Survey.ExpectMultiSelect("Enter password:").
-//    	Enter()
+//	Survey.ExpectMultiSelect("Enter password:").
+//		Enter()
 func (s *Survey) ExpectMultiSelect(message string) *MultiSelectPrompt {
 	e := newMultiSelect(s, message)
 
@@ -103,8 +103,8 @@ func (s *Survey) ExpectMultiSelect(message string) *MultiSelectPrompt {
 
 // ExpectPassword expects a PasswordPrompt.
 //
-//    Survey.ExpectPassword("Enter password:").
-//    	Answer("hello world!")
+//	Survey.ExpectPassword("Enter password:").
+//		Answer("hello world!")
 func (s *Survey) ExpectPassword(message string) *PasswordPrompt {
 	e := newPassword(s, message).Once()
 
@@ -115,8 +115,8 @@ func (s *Survey) ExpectPassword(message string) *PasswordPrompt {
 
 // ExpectSelect expects a SelectPrompt.
 //
-//    Survey.ExpectSelect("Enter password:").
-//    	Enter()
+//	Survey.ExpectSelect("Enter password:").
+//		Enter()
 func (s *Survey) ExpectSelect(message string) *SelectPrompt {
 	e := newSelect(s, message)
 

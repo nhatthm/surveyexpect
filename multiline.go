@@ -20,8 +20,8 @@ type MultilinePrompt struct {
 
 // Interrupt marks the answer is interrupted.
 //
-//    Survey.ExpectMultiline("Enter your message:").
-//    	Interrupt()
+//	Survey.ExpectMultiline("Enter your message:").
+//		Interrupt()
 func (p *MultilinePrompt) Interrupt() {
 	p.lock()
 	defer p.unlock()
@@ -32,8 +32,8 @@ func (p *MultilinePrompt) Interrupt() {
 
 // Answer sets the answer to the input prompt.
 //
-//    Survey.ExpectMultiline("Enter your message:").
-//    	Answer("hello world")
+//	Survey.ExpectMultiline("Enter your message:").
+//		Answer("hello world")
 func (p *MultilinePrompt) Answer(answer string) *MultilineAnswer {
 	p.lock()
 	defer p.unlock()
@@ -83,27 +83,27 @@ func (p *MultilinePrompt) String() string {
 
 // Once indicates that the message should only be asked once.
 //
-//    Survey.ExpectMultiline("Enter your message:").
-//    	Answer("hello world").
-//    	Once()
+//	Survey.ExpectMultiline("Enter your message:").
+//		Answer("hello world").
+//		Once()
 func (p *MultilinePrompt) Once() *MultilinePrompt {
 	return p.Times(1)
 }
 
 // Twice indicates that the message should only be asked twice.
 //
-//    Survey.ExpectMultiline("Enter your message:").
-//    	Answer("hello world").
-//    	Twice()
+//	Survey.ExpectMultiline("Enter your message:").
+//		Answer("hello world").
+//		Twice()
 func (p *MultilinePrompt) Twice() *MultilinePrompt {
 	return p.Times(2)
 }
 
 // Times indicates that the message should only be asked the indicated number of times.
 //
-//    Survey.ExpectMultiline("Enter your message:").
-//    	Answer("hello world").
-//    	Times(5)
+//	Survey.ExpectMultiline("Enter your message:").
+//		Answer("hello world").
+//		Times(5)
 func (p *MultilinePrompt) Times(i int) *MultilinePrompt {
 	p.times(i)
 

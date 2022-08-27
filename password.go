@@ -19,8 +19,8 @@ type PasswordPrompt struct {
 
 // ShowHelp sets help for the expectation.
 //
-//    Survey.ExpectPassword("Enter password:").
-//    	ShowHelp("Your shiny password")
+//	Survey.ExpectPassword("Enter password:").
+//		ShowHelp("Your shiny password")
 func (p *PasswordPrompt) ShowHelp(help string, options ...string) {
 	p.lock()
 	defer p.unlock()
@@ -31,8 +31,8 @@ func (p *PasswordPrompt) ShowHelp(help string, options ...string) {
 
 // Interrupt marks the answer is interrupted.
 //
-//    Survey.ExpectPassword("Enter password:").
-//    	Interrupt()
+//	Survey.ExpectPassword("Enter password:").
+//		Interrupt()
 func (p *PasswordPrompt) Interrupt() {
 	p.lock()
 	defer p.unlock()
@@ -43,8 +43,8 @@ func (p *PasswordPrompt) Interrupt() {
 
 // Answer sets the answer to the password prompt.
 //
-//    Survey.ExpectPassword("Enter password:").
-//    	Answer("hello world!")
+//	Survey.ExpectPassword("Enter password:").
+//		Answer("hello world!")
 func (p *PasswordPrompt) Answer(answer string) *PasswordAnswer {
 	p.lock()
 	defer p.unlock()
@@ -94,27 +94,27 @@ func (p *PasswordPrompt) String() string {
 
 // Once indicates that the message should only be asked once.
 //
-//    Survey.ExpectPassword("Enter password:").
-//    	Answer("hello world!").
-//    	Once()
+//	Survey.ExpectPassword("Enter password:").
+//		Answer("hello world!").
+//		Once()
 func (p *PasswordPrompt) Once() *PasswordPrompt {
 	return p.Times(1)
 }
 
 // Twice indicates that the message should only be asked twice.
 //
-//    Survey.ExpectPassword("Enter password:").
-//    	Answer("hello world!").
-//    	Twice()
+//	Survey.ExpectPassword("Enter password:").
+//		Answer("hello world!").
+//		Twice()
 func (p *PasswordPrompt) Twice() *PasswordPrompt {
 	return p.Times(2)
 }
 
 // Times indicates that the message should only be asked the indicated number of times.
 //
-//    Survey.ExpectPassword("Enter password:").
-//    	Answer("hello world!").
-//    	Times(5)
+//	Survey.ExpectPassword("Enter password:").
+//		Answer("hello world!").
+//		Times(5)
 func (p *PasswordPrompt) Times(i int) *PasswordPrompt {
 	p.times(i)
 

@@ -70,8 +70,8 @@ func expectMultiSelect(options ...string) *MultiSelectExpect {
 	return &e
 }
 
-func breakdownOptions(options []string, indicator *regexp.Regexp) (breakdown []map[string]string, pad string) {
-	breakdown = make([]map[string]string, 0, len(options))
+func breakdownOptions(options []string, indicator *regexp.Regexp) ([]map[string]string, string) {
+	breakdown := make([]map[string]string, 0, len(options))
 
 	var size int
 
