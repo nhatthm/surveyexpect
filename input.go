@@ -161,7 +161,7 @@ type InputAnswer struct {
 }
 
 // Do runs the step.
-// nolint: errcheck,gosec
+// nolint: errcheck,gosec,nolintlint
 func (a *InputAnswer) Do(c Console) error {
 	if a.interrupted {
 		c.Send(a.answer)

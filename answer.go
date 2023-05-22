@@ -24,9 +24,8 @@ type Answer interface {
 type NoAnswer struct{}
 
 // Do runs the step.
-// nolint: errcheck,gosec
 func (a *NoAnswer) Do(c Console) error {
-	c.SendLine("")
+	c.SendLine("") //nolint: errcheck,gosec
 
 	return nil
 }
@@ -44,9 +43,8 @@ func noAnswer() *NoAnswer {
 type InterruptAnswer struct{}
 
 // Do runs the step.
-// nolint: errcheck,gosec
 func (a *InterruptAnswer) Do(c Console) error {
-	c.SendLine(string(terminal.KeyInterrupt))
+	c.SendLine(string(terminal.KeyInterrupt)) //nolint: errcheck,gosec
 
 	return terminal.InterruptErr
 }
@@ -67,9 +65,8 @@ type HelpAnswer struct {
 }
 
 // Do runs the step.
-// nolint: errcheck,gosec
 func (a *HelpAnswer) Do(c Console) error {
-	c.SendLine(a.icon)
+	c.SendLine(a.icon) //nolint: errcheck,gosec
 
 	if _, err := c.ExpectString(a.help); err != nil {
 		return err
@@ -101,9 +98,8 @@ type Action struct {
 }
 
 // Do runs the step.
-// nolint: errcheck,gosec
 func (a *Action) Do(c Console) error {
-	c.Send(string(a.code))
+	c.Send(string(a.code)) //nolint: errcheck,gosec
 
 	return nil
 }
@@ -167,9 +163,8 @@ type HelpAction struct {
 }
 
 // Do runs the step.
-// nolint: errcheck,gosec
 func (a *HelpAction) Do(c Console) error {
-	c.Send(a.icon)
+	c.Send(a.icon) //nolint: errcheck,gosec
 
 	if _, err := c.ExpectString(a.help); err != nil {
 		return err
@@ -200,9 +195,8 @@ type TypeAnswer struct {
 }
 
 // Do runs the step.
-// nolint: errcheck,gosec
 func (a *TypeAnswer) Do(c Console) error {
-	c.Send(a.answer)
+	c.Send(a.answer) //nolint: errcheck,gosec
 
 	return nil
 }

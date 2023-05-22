@@ -44,8 +44,7 @@ func (s *Steps) Close() {
 }
 
 // Append appends an expectation to the sequence.
-// nolint: unparam
-func (s *Steps) Append(more ...Step) *Steps {
+func (s *Steps) Append(more ...Step) *Steps { //nolint: unparam
 	s.lock()
 	defer s.unlock()
 
@@ -154,7 +153,7 @@ func (s *Steps) ExpectationsWereMet() error {
 		return nil
 	}
 
-	// nolint:goerr113
+	//nolint:goerr113
 	return errors.New(s.String())
 }
 

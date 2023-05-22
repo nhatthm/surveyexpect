@@ -160,7 +160,7 @@ func (s *Survey) answer(c Console) <-chan struct{} {
 			}
 		}
 
-		c.ExpectEOF() // nolint: errcheck,gosec
+		c.ExpectEOF() //nolint: errcheck,gosec
 	}()
 
 	// Force close when timeout.
@@ -262,7 +262,7 @@ func (s *Survey) ExpectationsWereMet() error {
 	sb.WriteString("there are remaining expectations that were not met:\n\n")
 	sb.WriteString(err.Error())
 
-	// nolint:goerr113
+	//nolint:goerr113
 	return errors.New(sb.String())
 }
 

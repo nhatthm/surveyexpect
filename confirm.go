@@ -66,7 +66,7 @@ func (c *ConfirmPrompt) No() {
 
 // Answer sets a custom answer to the prompt.
 //
-// If the answer is not not empty, the survey expects to have a feedback from the prompt:
+// If the answer is not empty, the survey expects to have a feedback from the prompt:
 //
 //	`Sorry, your reply was invalid: "hello world!" is not a valid answer, please try again.`
 //
@@ -93,7 +93,7 @@ func (c *ConfirmPrompt) Do(console Console) error {
 		return err
 	}
 
-	_ = waitForCursorTwice(console) // nolint: errcheck
+	_ = waitForCursorTwice(console) //nolint: errcheck
 
 	err := c.answer.Do(console)
 	if err != nil && !IsInterrupted(err) {
@@ -144,7 +144,7 @@ func (a *ConfirmAnswer) Interrupted() {
 }
 
 // Do runs the step.
-// nolint: errcheck,gosec
+// nolint: errcheck,gosec,nolintlint
 func (a *ConfirmAnswer) Do(c Console) error {
 	if a.interrupted {
 		c.Send(a.answer)

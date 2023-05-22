@@ -27,7 +27,7 @@ func (b *stringsBuilder) Writef(format string, args ...interface{}) *stringsBuil
 	return b
 }
 
-func (b *stringsBuilder) WriteLinef(format string, args ...interface{}) *stringsBuilder { // nolint: unparam
+func (b *stringsBuilder) WriteLinef(format string, args ...interface{}) *stringsBuilder { //nolint: unparam
 	return b.Writef(format, args...).
 		WriteRune('\n')
 }

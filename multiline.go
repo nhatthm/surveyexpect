@@ -50,7 +50,7 @@ func (p *MultilinePrompt) Do(c Console) error {
 		return err
 	}
 
-	_ = waitForCursorTwice(c) // nolint: errcheck
+	_ = waitForCursorTwice(c) //nolint: errcheck
 
 	err := p.answer.Do(c)
 	if err != nil && !IsInterrupted(err) {
@@ -118,7 +118,7 @@ type MultilineAnswer struct {
 }
 
 // Do runs the step.
-// nolint: errcheck,gosec
+// nolint: errcheck,gosec,nolintlint
 func (a *MultilineAnswer) Do(c Console) error {
 	if a.interrupted {
 		c.Send(a.answer)

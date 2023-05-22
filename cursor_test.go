@@ -20,8 +20,8 @@ func TestWaitForCursor(t *testing.T) {
 	console, err := expect.NewConsole(expect.WithStdin(pty), expect.WithStdout(term), expect.WithCloser(pty, tty))
 	require.NoError(t, err)
 
-	_ = console.Close() // nolint: errcheck
-	_ = tty.Close()     // nolint: errcheck
+	_ = console.Close() //nolint: errcheck
+	_ = tty.Close()     //nolint: errcheck
 
 	err = waitForCursor(console)
 	require.Error(t, err)
@@ -38,8 +38,8 @@ func TestWaitForCursorTwice(t *testing.T) {
 	console, err := expect.NewConsole(expect.WithStdin(pty), expect.WithStdout(term), expect.WithCloser(pty, tty))
 	require.NoError(t, err)
 
-	_ = console.Close() // nolint: errcheck
-	_ = tty.Close()     // nolint: errcheck
+	_ = console.Close() //nolint: errcheck
+	_ = tty.Close()     //nolint: errcheck
 
 	err = waitForCursorTwice(console)
 	require.Error(t, err)
