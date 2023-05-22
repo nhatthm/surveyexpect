@@ -50,8 +50,7 @@ func Expect(options ...ExpectOption) Expector {
 	}
 }
 
-// nolint: gochecknoinits
-func init() {
+func init() { //nolint: gochecknoinits
 	// Disable color output for all prompts to simplify testing.
 	core.DisableColor = true
 }
