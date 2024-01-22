@@ -11,7 +11,7 @@ import (
 type TestingT interface {
 	Errorf(format string, args ...interface{})
 	FailNow()
-	Cleanup(func())
+	Cleanup(f func())
 	Log(args ...interface{})
 	Logf(format string, args ...interface{})
 }
